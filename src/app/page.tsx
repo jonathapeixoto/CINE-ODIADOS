@@ -1,5 +1,6 @@
 import { BarraFiltros } from '@/components/filtros/BarraFiltros'
 import { SelecaoServicos } from '@/components/filtros/SelecaoServicos'
+import { CarregarMais } from '@/components/filme/CarregarMais'
 import { GradeFilmes } from '@/components/filme/GradeFilmes'
 import { lerFiltros, type ParamsBrutos } from '@/lib/filtros'
 import { escolheuServicos, lerServicosDoCookie } from '@/lib/preferencias/servicos-servidor'
@@ -31,6 +32,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
       <div className="mt-8">
         <GradeFilmes filmes={pagina.filmes} />
       </div>
+      <CarregarMais filtros={filtros} paginaAtual={filtros.pagina} totalPaginas={pagina.totalPaginas} />
     </main>
   )
 }

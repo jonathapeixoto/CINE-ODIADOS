@@ -17,7 +17,6 @@ import {
   mapearGenero,
   mapearProvedor,
   ordenarProvedores,
-  urlImagem,
 } from './mapeadores'
 import type {
   FilmeDetalhadoCru,

@@ -11,13 +11,17 @@ export function Cabecalho() {
         >
           O que assistir hoje
         </Link>
-        {/* Sozinha na sua própria linha no mobile (não cabe ao lado da marca e
-            do "Minha lista" numa tela estreita); no desktop volta pra mesma
-            linha, encolhida entre os dois. */}
-        <div className="order-3 w-full sm:order-none sm:flex sm:w-auto sm:flex-1 sm:justify-center">
+        {/* Sem utilitário `order-*`: a ordem de tabulação segue o DOM, então a
+            ordem visual precisa ser a mesma em toda largura. No mobile ela
+            não cabe ao lado da marca — sendo `w-full` (e vindo depois da
+            marca no DOM), ela força sua própria linha, e "Minha lista"
+            (também sem `order`, cai onde o DOM manda) desce pra linha
+            seguinte. No desktop, uma única linha, nessa mesma ordem do DOM:
+            marca, busca, nav. */}
+        <div className="w-full sm:flex sm:w-auto sm:flex-1 sm:justify-center">
           <CampoBusca />
         </div>
-        <nav>
+        <nav className="ml-auto sm:ml-0">
           <Link
             href="/minha-lista"
             className="text-sm font-medium text-texto-fraco transition-colors hover:text-acento"

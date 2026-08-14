@@ -1,0 +1,81 @@
+'use client'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
+import type { Provedor } from '@/lib/tipos'
+
+const alternar = (lista: number[], id: number): number[] =>
+  lista.includes(id) ? lista.filter((i) => i !== id) : [...lista, id]
+
+// Cada "lampada" acende em âmbar quando marcada — o mesmo aceno de marquise
+// que dá nome ao acento da paleta (ver comentário em globals.css).
+const classeLampada =
+  'group relative flex items-center justify-center rounded-2xl border border-borda bg-superficie-alta p-3 ' +
+  'transition-all hover:border-acento/60 has-[:checked]:border-acento has-[:checked]:bg-acento/10 ' +
+  'has-[:checked]:shadow-[0_0_20px_-4px_var(--color-acento)]'
+
+export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
+  const router = useRouter()
+  const [escolhidos, setEscolhidos] = useState<number[]>([])
+
+  const confirmar = (ids: number[]) => {
+    salvarServicos(ids)
+    router.refresh()
+  }
+
+  return (
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6">
+      <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
+        Quais serviços você assina?
+      </h1>
+      <p className="mt-3 max-w-md text-sm text-texto-fraco sm:text-base">
+        Assim eu mostro só o que dá para assistir sem pagar de novo.
+      </p>
+
+      <fieldset className="mt-10 w-full min-w-0 border-0 p-0">
+        <legend className="sr-only">Serviços de streaming</legend>
+        <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-5">
+          {provedores.map((provedor) => (
+            <li key={provedor.id}>
+              <label className={classeLampada}>
+                <input
+                  type="checkbox"
+                  className="absolute right-2.5 top-2.5 h-3.5 w-3.5 accent-acento"
+                  checked={escolhidos.includes(provedor.id)}
+                  onChange={() => setEscolhidos((atual) => alternar(atual, provedor.id))}
+                />
+                {/* O nome vem do alt: repeti-lo num <span> faria o leitor de tela
+                    anunciar "Netflix Netflix" e quebraria a busca por nome no teste. */}
+                <Image
+                  src={provedor.logo}
+                  alt={provedor.nome}
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-xl object-cover"
+                />
+              </label>
+            </li>
+          ))}
+        </ul>
+      </fieldset>
+
+      <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
+        <button
+          type="button"
+          onClick={() => confirmar(escolhidos)}
+          className="rounded-full bg-acento px-8 py-3 text-sm font-semibold text-acento-texto transition-colors hover:bg-acento-forte"
+        >
+          Ver filmes
+        </button>
+        <button
+          type="button"
+          onClick={() => confirmar([])}
+          className="text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
+        >
+          Pular por enquanto
+        </button>
+      </div>
+    </main>
+  )
+}

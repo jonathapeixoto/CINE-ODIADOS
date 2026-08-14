@@ -1,10 +1,15 @@
 import { BarraFiltros } from '@/components/filtros/BarraFiltros'
+import { SelecaoServicos } from '@/components/filtros/SelecaoServicos'
 import { GradeFilmes } from '@/components/filme/GradeFilmes'
 import { lerFiltros, type ParamsBrutos } from '@/lib/filtros'
-import { lerServicosDoCookie } from '@/lib/preferencias/servicos-servidor'
+import { escolheuServicos, lerServicosDoCookie } from '@/lib/preferencias/servicos-servidor'
 import { descobrirFilmes, listarGeneros, listarProvedores } from '@/lib/tmdb'
 
 export default async function Home({ searchParams }: { searchParams: Promise<ParamsBrutos> }) {
+  if (!(await escolheuServicos())) {
+    return <SelecaoServicos provedores={await listarProvedores()} />
+  }
+
   const filtros = lerFiltros(await searchParams, await lerServicosDoCookie())
   const [pagina, provedores, generos] = await Promise.all([
     descobrirFilmes(filtros),

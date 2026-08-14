@@ -1,5 +1,6 @@
 import { BarraFiltros } from '@/components/filtros/BarraFiltros'
 import { SelecaoServicos } from '@/components/filtros/SelecaoServicos'
+import { BotaoSurpreendaMe } from '@/components/filme/BotaoSurpreendaMe'
 import { CarregarMais } from '@/components/filme/CarregarMais'
 import { GradeFilmes } from '@/components/filme/GradeFilmes'
 import { lerFiltros, type ParamsBrutos } from '@/lib/filtros'
@@ -23,8 +24,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
       <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
         O que assistir hoje
       </h1>
-      <div className="mt-6">
-        <BarraFiltros filtros={filtros} provedores={provedores} generos={generos} />
+      <div className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:gap-5">
+        <div className="min-w-0 flex-1">
+          <BarraFiltros filtros={filtros} provedores={provedores} generos={generos} />
+        </div>
+        <BotaoSurpreendaMe filtros={filtros} />
       </div>
       <p className="mt-6 font-mono text-sm text-texto-fraco">
         {pagina.totalResultados} filmes encontrados

@@ -1,1 +1,33 @@
 @import 'tailwindcss';
+
+/*
+ * Paleta "sala escura": fundo quase preto para o pôster ser o protagonista,
+ * com um acento âmbar (luz de marquise / canhoto de ingresso) em vez do
+ * verde-ácido genérico. Tipografia: serifa editorial no wordmark do app
+ * (usada com itálico só onde o app se nomeia), Inter no corpo, e uma
+ * monoespaçada nos números (ano, nota) para lembrar um timecode de cinema.
+ */
+@theme {
+  --color-fundo: #0c0e14;
+  --color-superficie: #161923;
+  --color-superficie-alta: #1f2330;
+  --color-borda: #2a2f3d;
+  --color-texto: #f1eee6;
+  --color-texto-fraco: #9298ab;
+  --color-acento: #e8a33d;
+  --color-acento-forte: #f4bd66;
+  --color-acento-texto: #241605;
+
+  --font-display: var(--nf-display), ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: var(--nf-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--nf-mono), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+/* Indicador de foco visível em toda a interface, incluindo componentes futuros. */
+:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--color-acento);
+  outline-offset: 3px;
+  border-radius: 6px;
+}

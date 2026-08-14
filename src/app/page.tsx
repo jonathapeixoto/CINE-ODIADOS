@@ -1,4 +1,5 @@
 import { BarraFiltros } from '@/components/filtros/BarraFiltros'
+import { EstadoVazio } from '@/components/filtros/EstadoVazio'
 import { SelecaoServicos } from '@/components/filtros/SelecaoServicos'
 import { BotaoSurpreendaMe } from '@/components/filme/BotaoSurpreendaMe'
 import { CarregarMais } from '@/components/filme/CarregarMais'
@@ -6,6 +7,7 @@ import { GradeFilmes } from '@/components/filme/GradeFilmes'
 import { lerFiltros, type ParamsBrutos } from '@/lib/filtros'
 import { escolheuServicos, lerServicosDoCookie } from '@/lib/preferencias/servicos-servidor'
 import { descobrirFilmes, listarGeneros, listarProvedores } from '@/lib/tmdb'
+import { sugerirAfrouxamento } from '@/lib/tmdb/sugestoes'
 
 export default async function Home({ searchParams }: { searchParams: Promise<ParamsBrutos> }) {
   if (!(await escolheuServicos())) {
@@ -33,10 +35,22 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
       <p className="mt-6 font-mono text-sm text-texto-fraco">
         {pagina.totalResultados} filmes encontrados
       </p>
-      <div className="mt-8">
-        <GradeFilmes filmes={pagina.filmes} />
-      </div>
-      <CarregarMais filtros={filtros} paginaAtual={filtros.pagina} totalPaginas={pagina.totalPaginas} />
+      {pagina.filmes.length === 0 ? (
+        <div className="mt-8">
+          <EstadoVazio sugestao={await sugerirAfrouxamento(filtros)} />
+        </div>
+      ) : (
+        <>
+          <div className="mt-8">
+            <GradeFilmes filmes={pagina.filmes} />
+          </div>
+          <CarregarMais
+            filtros={filtros}
+            paginaAtual={filtros.pagina}
+            totalPaginas={pagina.totalPaginas}
+          />
+        </>
+      )}
     </main>
   )
 }

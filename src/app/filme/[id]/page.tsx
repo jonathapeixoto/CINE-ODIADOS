@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import { BotaoWatchlist } from '@/components/filme/BotaoWatchlist'
 import { OndeAssistir } from '@/components/filme/OndeAssistir'
 import { obterDisponibilidade, obterFilme } from '@/lib/tmdb'
 import { ErroTmdb } from '@/lib/tmdb/cliente'
@@ -97,7 +98,7 @@ export default async function PaginaFilme({ params }: Props) {
               {filme.titulo}
             </h1>
 
-            {/* Espaço reservado para o botão de watchlist (Tarefa 15), logo abaixo do título. */}
+            <BotaoWatchlist filme={{ id: filme.id, titulo: filme.titulo, poster: filme.poster }} />
 
             <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-sm text-texto-fraco">
               <span className="inline-flex items-center rounded-full bg-acento/15 px-2.5 py-1 font-semibold text-acento">

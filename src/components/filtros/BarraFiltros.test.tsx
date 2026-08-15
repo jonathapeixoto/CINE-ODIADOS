@@ -108,6 +108,76 @@ describe('BarraFiltros', () => {
     expect(urlDoPush().searchParams.get('duracao')).toBe('120')
   })
 
+  it('escreve os dois extremos do período ao escolher uma década', async () => {
+    render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
+
+    await userEvent.selectOptions(screen.getByLabelText('Período'), 'Anos 1990')
+
+    expect(urlDoPush().searchParams.get('de')).toBe('1990')
+    expect(urlDoPush().searchParams.get('ate')).toBe('1999')
+  })
+
+  it('escreve só o início quando a década é aberta no fim', async () => {
+    render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
+
+    await userEvent.selectOptions(screen.getByLabelText('Período'), '2020 em diante')
+
+    expect(urlDoPush().searchParams.get('de')).toBe('2020')
+    expect(urlDoPush().searchParams.get('ate')).toBeNull()
+  })
+
+  it('mostra selecionada a década que veio na URL', () => {
+    render(
+      <BarraFiltros
+        filtros={{ ...FILTROS_PADRAO, anoDe: 2000, anoAte: 2009 }}
+        provedores={provedores}
+        generos={generos}
+      />,
+    )
+
+    expect(screen.getByLabelText('Período')).toHaveValue('2000')
+  })
+
+  it('limpa o período ao voltar para "Qualquer"', async () => {
+    render(
+      <BarraFiltros
+        filtros={{ ...FILTROS_PADRAO, anoDe: 2010, anoAte: 2019 }}
+        provedores={provedores}
+        generos={generos}
+      />,
+    )
+
+    await userEvent.selectOptions(screen.getByLabelText('Período'), 'Qualquer')
+
+    expect(urlDoPush().searchParams.get('de')).toBeNull()
+    expect(urlDoPush().searchParams.get('ate')).toBeNull()
+  })
+
+  it('não finge "Qualquer" quando a URL traz um recorte fora das décadas', () => {
+    render(
+      <BarraFiltros
+        filtros={{ ...FILTROS_PADRAO, anoDe: 1975, anoAte: 1981 }}
+        provedores={provedores}
+        generos={generos}
+      />,
+    )
+
+    expect(screen.getByLabelText('Período')).not.toHaveValue('')
+    expect(screen.getByRole('option', { name: '1975 a 1981' })).toBeDisabled()
+  })
+
+  it('conta o período entre os filtros ativos', () => {
+    render(
+      <BarraFiltros
+        filtros={{ ...FILTROS_PADRAO, anoDe: 1990, anoAte: 1999 }}
+        provedores={provedores}
+        generos={generos}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /filtros/i })).toHaveTextContent('1')
+  })
+
   it('escreve a ordenação escolhida', async () => {
     render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
 

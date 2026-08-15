@@ -14,6 +14,26 @@ const ORDENS: { valor: Filtros['ordenacao']; rotulo: string }[] = [
   { valor: 'lancamento', rotulo: 'Mais recentes' },
 ]
 
+// anoDe/anoAte são um par: a década é a unidade que faz sentido escolher, e um
+// único select escreve os dois de uma vez.
+const PERIODOS: { valor: string; rotulo: string; anoDe: number | null; anoAte: number | null }[] = [
+  { valor: '', rotulo: 'Qualquer', anoDe: null, anoAte: null },
+  { valor: '2020', rotulo: '2020 em diante', anoDe: 2020, anoAte: null },
+  { valor: '2010', rotulo: 'Anos 2010', anoDe: 2010, anoAte: 2019 },
+  { valor: '2000', rotulo: 'Anos 2000', anoDe: 2000, anoAte: 2009 },
+  { valor: '1990', rotulo: 'Anos 1990', anoDe: 1990, anoAte: 1999 },
+  { valor: 'antigos', rotulo: 'Antes de 1990', anoDe: null, anoAte: 1989 },
+]
+
+const PERIODO_LIVRE = 'personalizado'
+
+// A URL aceita qualquer par de anos (zod só valida o intervalo), então pode
+// chegar aqui um recorte que não é nenhuma das décadas. Mostrar "Qualquer"
+// nesse caso seria mentir sobre um filtro que está valendo.
+const valorDoPeriodo = (filtros: Filtros): string =>
+  PERIODOS.find((p) => p.anoDe === filtros.anoDe && p.anoAte === filtros.anoAte)?.valor ??
+  PERIODO_LIVRE
+
 const alternar = (lista: number[], id: number): number[] =>
   lista.includes(id) ? lista.filter((i) => i !== id) : [...lista, id]
 
@@ -101,11 +121,14 @@ export function BarraFiltros({
     router.push(`/?${escreverFiltros(novos).toString()}`, { scroll: false })
   }
 
+  const periodoAtual = valorDoPeriodo(filtros)
+
   const totalAtivos =
     filtros.servicos.length +
     filtros.generos.length +
     (filtros.notaMinima !== null ? 1 : 0) +
-    (filtros.duracaoMaxMin !== null ? 1 : 0)
+    (filtros.duracaoMaxMin !== null ? 1 : 0) +
+    (filtros.anoDe !== null || filtros.anoAte !== null ? 1 : 0)
 
   return (
     <section
@@ -216,6 +239,29 @@ export function BarraFiltros({
                   até {minutos} min
                 </option>
               ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className={classeRotulo}>Período</span>
+            <select
+              className={classeSelect}
+              value={periodoAtual}
+              onChange={(evento) => {
+                const escolhido = PERIODOS.find((p) => p.valor === evento.target.value)
+                if (escolhido) aplicar({ anoDe: escolhido.anoDe, anoAte: escolhido.anoAte })
+              }}
+            >
+              {PERIODOS.map((periodo) => (
+                <option key={periodo.valor} value={periodo.valor}>
+                  {periodo.rotulo}
+                </option>
+              ))}
+              {periodoAtual === PERIODO_LIVRE && (
+                <option value={PERIODO_LIVRE} disabled>
+                  {filtros.anoDe ?? '…'} a {filtros.anoAte ?? '…'}
+                </option>
+              )}
             </select>
           </label>
 

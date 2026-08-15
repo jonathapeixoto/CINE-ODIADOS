@@ -104,6 +104,21 @@ describe('buscarTmdb', () => {
     )
   })
 
+  it('ignora barra sobrando no fim de TMDB_BASE_URL', async () => {
+    let recebido: Request | undefined
+    vi.stubEnv('TMDB_BASE_URL', 'https://api.themoviedb.org/3/')
+    servidor.use(
+      http.get('https://api.themoviedb.org/3/genre/movie/list', ({ request }) => {
+        recebido = request
+        return HttpResponse.json({ genres: [] })
+      }),
+    )
+
+    await buscarTmdb('/genre/movie/list', {}, { revalidate: 86400 })
+
+    expect(new URL(recebido!.url).pathname).toBe('/3/genre/movie/list')
+  })
+
   it('respeita TMDB_BASE_URL para apontar a uma API falsa', async () => {
     vi.stubEnv('TMDB_BASE_URL', 'http://127.0.0.1:4010')
     servidor.use(http.get('http://127.0.0.1:4010/genre/movie/list', () => HttpResponse.json({ genres: [] })))

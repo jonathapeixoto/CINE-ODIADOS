@@ -30,7 +30,10 @@ export async function buscarTmdb<T>(
     throw new ErroTmdb(500, 'TMDB_READ_TOKEN não configurado. Veja o .env.example.')
   }
 
-  const url = new URL(`${process.env.TMDB_BASE_URL || BASE_TMDB_PADRAO}${caminho}`)
+  // O caminho já começa com "/", então uma barra sobrando na variável de
+  // ambiente viraria ".../3//discover/movie".
+  const base = (process.env.TMDB_BASE_URL || BASE_TMDB_PADRAO).replace(/\/+$/, '')
+  const url = new URL(`${base}${caminho}`)
   url.searchParams.set('language', IDIOMA)
   for (const [chave, valor] of Object.entries(params)) url.searchParams.set(chave, valor)
 

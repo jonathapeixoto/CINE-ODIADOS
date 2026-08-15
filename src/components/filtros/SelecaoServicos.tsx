@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
 import type { Provedor } from '@/lib/tipos'
+import { SERVICOS_NA_PRIMEIRA_VISITA, provedoresVisiveis } from './provedores-visiveis'
 
 const alternar = (lista: number[], id: number): number[] =>
   lista.includes(id) ? lista.filter((i) => i !== id) : [...lista, id]
@@ -18,6 +19,12 @@ const classeLampada =
 export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
   const router = useRouter()
   const [escolhidos, setEscolhidos] = useState<number[]>([])
+  const [todos, setTodos] = useState(false)
+
+  const naTela = todos
+    ? provedores
+    : provedoresVisiveis(provedores, escolhidos, SERVICOS_NA_PRIMEIRA_VISITA)
+  const escondidos = provedores.length - naTela.length
 
   const confirmar = (ids: number[]) => {
     salvarServicos(ids)
@@ -36,7 +43,7 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
       <fieldset className="mt-10 w-full min-w-0 border-0 p-0">
         <legend className="sr-only">Serviços de streaming</legend>
         <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-5">
-          {provedores.map((provedor) => (
+          {naTela.map((provedor) => (
             <li key={provedor.id}>
               <label className={classeLampada}>
                 <input
@@ -67,6 +74,20 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
             </li>
           ))}
         </ul>
+
+        {/* A lista do TMDB passa de cem serviços no Brasil. Mostrar todos de
+            cara transformaria a primeira tela numa parede de logos; os de
+            verdade estão no começo, já ordenados por display_priority. */}
+        {(todos || escondidos > 0) && (
+          <button
+            type="button"
+            aria-expanded={todos}
+            onClick={() => setTodos((v) => !v)}
+            className="mx-auto mt-6 block text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
+          >
+            {todos ? 'Ver menos serviços' : `Ver mais ${escondidos} serviços`}
+          </button>
+        )}
       </fieldset>
 
       <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">

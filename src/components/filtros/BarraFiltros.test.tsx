@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { BarraFiltros } from '@/components/filtros/BarraFiltros'
+import { SERVICOS_NA_BARRA } from '@/components/filtros/provedores-visiveis'
 import { FILTROS_PADRAO } from '@/lib/filtros'
 
 const { estado } = vi.hoisted(() => ({ estado: { push: vi.fn() } }))
@@ -76,6 +77,40 @@ describe('BarraFiltros', () => {
     await userEvent.selectOptions(screen.getByLabelText('Ordenar por'), 'nota')
 
     expect(urlDoPush().searchParams.get('ordem')).toBe('nota')
+  })
+
+  // O TMDB real devolve na casa da centena de provedores no Brasil; a barra é
+  // fixa no topo, então mostrar todos cobriria a grade que ela filtra.
+  const muitos = Array.from({ length: 40 }, (_, i) => ({
+    id: i + 1,
+    nome: `Serviço ${i + 1}`,
+    logo: null,
+    prioridade: i + 1,
+  }))
+
+  it('mostra só a cabeça da lista de serviços e revela o resto sob demanda', async () => {
+    render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={muitos} generos={generos} />)
+
+    expect(screen.getByRole('checkbox', { name: `Serviço ${SERVICOS_NA_BARRA}` })).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Serviço 40' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /mais 28 serviços/i }))
+
+    expect(screen.getByRole('checkbox', { name: 'Serviço 40' })).toBeInTheDocument()
+  })
+
+  it('mantém à vista um serviço marcado que ficou fora da cabeça da lista', () => {
+    render(
+      <BarraFiltros
+        filtros={{ ...FILTROS_PADRAO, servicos: [37] }}
+        provedores={muitos}
+        generos={generos}
+      />,
+    )
+
+    // Sem isso o filtro sumiria da barra e o usuário não teria como desligá-lo.
+    expect(screen.getByRole('checkbox', { name: 'Serviço 37' })).toBeChecked()
+    expect(screen.queryByRole('checkbox', { name: 'Serviço 38' })).not.toBeInTheDocument()
   })
 
   it('marca visualmente os filtros ativos', () => {

@@ -29,6 +29,11 @@ const json = (resposta, corpo) => {
   resposta.end(JSON.stringify(corpo))
 }
 
+const naoEncontrado = (resposta) => {
+  resposta.writeHead(404, { 'content-type': 'application/json' })
+  resposta.end(JSON.stringify({ status_message: 'não encontrado no mock' }))
+}
+
 const lista = { page: 1, results: filmes, total_pages: 2, total_results: 40 }
 
 createServer((requisicao, resposta) => {
@@ -41,7 +46,12 @@ createServer((requisicao, resposta) => {
 
   const detalhe = caminho.match(/^\/movie\/(\d+)$/)
   if (detalhe) {
-    const filme = filmes.find((f) => f.id === Number(detalhe[1])) ?? filmes[0]
+    // Como o TMDB real: id que não existe é 404, não o primeiro filme da lista.
+    const filme = filmes.find((f) => f.id === Number(detalhe[1]))
+    // O atraso força a ordem que expôs o defeito em produção: a página e o
+    // generateMetadata correm em paralelo, e sem ele o 404 desta chamada chega
+    // primeiro e mascara o 404 da chamada de disponibilidade.
+    if (!filme) return setTimeout(() => naoEncontrado(resposta), 300)
     return json(resposta, {
       ...filme,
       runtime: 120,
@@ -51,7 +61,11 @@ createServer((requisicao, resposta) => {
     })
   }
 
-  if (/^\/movie\/\d+\/watch\/providers$/.test(caminho)) {
+  const disponibilidade = caminho.match(/^\/movie\/(\d+)\/watch\/providers$/)
+  if (disponibilidade) {
+    // Idem: para um id inexistente o TMDB responde 404 aqui também, e não uma
+    // lista vazia — que é o que ele devolve para um filme sem streaming.
+    if (!filmes.some((f) => f.id === Number(disponibilidade[1]))) return naoEncontrado(resposta)
     return json(resposta, {
       results: {
         BR: { link: 'https://www.justwatch.com/br/filme/teste', flatrate: [provedores[0]] },
@@ -59,8 +73,7 @@ createServer((requisicao, resposta) => {
     })
   }
 
-  resposta.writeHead(404, { 'content-type': 'application/json' })
-  resposta.end(JSON.stringify({ status_message: 'não encontrado no mock' }))
+  return naoEncontrado(resposta)
 }).listen(PORTA, '127.0.0.1', () => {
   console.log(`TMDB falso ouvindo em http://127.0.0.1:${PORTA}`)
 })

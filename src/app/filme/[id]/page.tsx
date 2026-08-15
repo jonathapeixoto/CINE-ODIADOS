@@ -14,9 +14,12 @@ const lerId = (bruto: string): number => {
   return id
 }
 
-async function carregar(id: number) {
+// Um 404 do TMDB em qualquer uma das duas chamadas significa que o filme não
+// existe. Vale também para a de disponibilidade: para um id inexistente ela
+// responde 404, e não uma lista vazia como faz para um filme sem streaming.
+async function ou404<T>(promessa: Promise<T>): Promise<T> {
   try {
-    return await obterFilme(id)
+    return await promessa
   } catch (erro) {
     if (erro instanceof ErroTmdb && erro.status === 404) notFound()
     throw erro
@@ -24,7 +27,7 @@ async function carregar(id: number) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const filme = await carregar(lerId((await params).id))
+  const filme = await ou404(obterFilme(lerId((await params).id)))
   return {
     title: `${filme.titulo} — O que assistir hoje`,
     description:
@@ -53,7 +56,10 @@ function IconeSemPoster() {
 
 export default async function PaginaFilme({ params }: Props) {
   const id = lerId((await params).id)
-  const [filme, disponibilidade] = await Promise.all([carregar(id), obterDisponibilidade(id)])
+  const [filme, disponibilidade] = await Promise.all([
+    ou404(obterFilme(id)),
+    ou404(obterDisponibilidade(id)),
+  ])
 
   return (
     <main className="flex-1 pb-16">

@@ -261,6 +261,20 @@ describe('listas e busca', () => {
     expect(provedores[0].logo).toBe('https://image.tmdb.org/t/p/w92/n.jpg')
   })
 
+  it('deixa o logo nulo quando o provedor não tem imagem', async () => {
+    servidor.use(
+      http.get(`${BASE}/watch/providers/movie`, () =>
+        HttpResponse.json({
+          results: [
+            { provider_id: 42, provider_name: 'Canal Sem Logo', logo_path: null, display_priority: 3 },
+          ],
+        }),
+      ),
+    )
+
+    expect((await listarProvedores())[0].logo).toBeNull()
+  })
+
   it('lista gêneros', async () => {
     servidor.use(
       http.get(`${BASE}/genre/movie/list`, () =>

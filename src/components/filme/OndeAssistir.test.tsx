@@ -35,6 +35,15 @@ describe('OndeAssistir', () => {
     expect(screen.queryByText('Para comprar')).not.toBeInTheDocument()
   })
 
+  it('mostra o nome no lugar do logo quando o provedor não tem imagem', () => {
+    const semLogo = { id: 42, nome: 'Canal Sem Logo', logo: null, prioridade: 3 }
+    render(<OndeAssistir disponibilidade={{ ...vazia, assinatura: [semLogo] }} />)
+
+    expect(screen.getByText('Canal Sem Logo')).toBeInTheDocument()
+    // Nada de <img src=""> — o next/image recusa src vazio.
+    expect(document.querySelector('img')).toBeNull()
+  })
+
   it('diz explicitamente quando não há streaming no Brasil', () => {
     render(<OndeAssistir disponibilidade={vazia} />)
     expect(screen.getByText(/não disponível em streaming no Brasil no momento/i)).toBeInTheDocument()

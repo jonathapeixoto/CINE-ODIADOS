@@ -26,7 +26,7 @@ export type FilmeDetalhadoCru = FilmeCru & {
 export type ProvedorCru = {
   provider_id: number
   provider_name: string
-  logo_path: string
+  logo_path: string | null
   display_priority: number
 }
 

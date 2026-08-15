@@ -51,14 +51,25 @@ function Grupo({ titulo, provedores }: { titulo: string; provedores: Provedor[] 
       <ul className="mt-2.5 flex flex-wrap gap-2.5">
         {provedores.map((provedor) => (
           <li key={provedor.id}>
-            <Image
-              src={provedor.logo}
-              alt={provedor.nome}
-              title={provedor.nome}
-              width={48}
-              height={48}
-              className="rounded-xl ring-1 ring-borda"
-            />
+            {provedor.logo === null ? (
+              // Sem imagem no TMDB: o nome ocupa o lugar do logo, no mesmo
+              // gabarito, com a borda tracejada dos demais espaços reservados.
+              <span
+                title={provedor.nome}
+                className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-dashed border-borda px-1 text-center text-[10px] leading-tight text-texto-fraco"
+              >
+                {provedor.nome}
+              </span>
+            ) : (
+              <Image
+                src={provedor.logo}
+                alt={provedor.nome}
+                title={provedor.nome}
+                width={48}
+                height={48}
+                className="rounded-xl ring-1 ring-borda"
+              />
+            )}
           </li>
         ))}
       </ul>

@@ -20,7 +20,8 @@ export type FilmeDetalhado = Filme & {
   trailerYoutubeId: string | null
 }
 
-export type Provedor = { id: number; nome: string; logo: string; prioridade: number }
+/** `logo: null` quando o TMDB não tem imagem do serviço; quem renderiza mostra o nome. */
+export type Provedor = { id: number; nome: string; logo: string | null; prioridade: number }
 
 export type Disponibilidade = {
   assinatura: Provedor[]

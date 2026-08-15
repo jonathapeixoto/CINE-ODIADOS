@@ -46,14 +46,23 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
                   onChange={() => setEscolhidos((atual) => alternar(atual, provedor.id))}
                 />
                 {/* O nome vem do alt: repeti-lo num <span> faria o leitor de tela
-                    anunciar "Netflix Netflix" e quebraria a busca por nome no teste. */}
-                <Image
-                  src={provedor.logo}
-                  alt={provedor.nome}
-                  width={56}
-                  height={56}
-                  className="h-14 w-14 rounded-xl object-cover"
-                />
+                    anunciar "Netflix Netflix" e quebraria a busca por nome no teste.
+                    Por isso o espaço reservado substitui o logo em vez de somar a
+                    ele — o nome acessível da caixa de seleção é o mesmo dos dois
+                    jeitos, com imagem ou sem. */}
+                {provedor.logo === null ? (
+                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-dashed border-borda px-1 text-center text-[11px] leading-tight text-texto-fraco">
+                    {provedor.nome}
+                  </span>
+                ) : (
+                  <Image
+                    src={provedor.logo}
+                    alt={provedor.nome}
+                    width={56}
+                    height={56}
+                    className="h-14 w-14 rounded-xl object-cover"
+                  />
+                )}
               </label>
             </li>
           ))}

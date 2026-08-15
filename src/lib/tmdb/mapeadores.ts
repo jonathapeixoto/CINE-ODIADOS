@@ -31,7 +31,7 @@ export function mapearProvedor(cru: ProvedorCru): Provedor {
   return {
     id: cru.provider_id,
     nome: cru.provider_name,
-    logo: urlImagem(cru.logo_path, 'w92') ?? '',
+    logo: urlImagem(cru.logo_path, 'w92'),
     prioridade: cru.display_priority,
   }
 }

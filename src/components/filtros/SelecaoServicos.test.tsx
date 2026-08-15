@@ -43,4 +43,12 @@ describe('SelecaoServicos', () => {
     render(<SelecaoServicos provedores={provedores} />)
     expect(screen.getByAltText('Netflix')).toBeInTheDocument()
   })
+
+  it('mantém o nome acessível quando o serviço não tem logo', () => {
+    render(<SelecaoServicos provedores={[{ id: 42, nome: 'Canal Sem Logo', logo: null, prioridade: 3 }]} />)
+
+    // Mesmo nome acessível com imagem ou sem: aqui vem do texto, não do alt.
+    expect(screen.getByRole('checkbox', { name: 'Canal Sem Logo' })).toBeInTheDocument()
+    expect(document.querySelector('img')).toBeNull()
+  })
 })

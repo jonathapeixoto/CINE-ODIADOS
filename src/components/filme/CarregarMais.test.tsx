@@ -40,6 +40,41 @@ describe('CarregarMais', () => {
     expect(screen.queryByRole('button', { name: /carregar mais/i })).not.toBeInTheDocument()
   })
 
+  it('descarta as páginas extras quando os filtros mudam', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ filmes: [filme(2)], totalPaginas: 3, totalResultados: 60 }),
+      }),
+    )
+
+    const { rerender } = render(
+      <CarregarMais filtros={FILTROS_PADRAO} paginaAtual={1} totalPaginas={3} />,
+    )
+    await userEvent.click(screen.getByRole('button', { name: /carregar mais/i }))
+    expect(await screen.findByText('Filme 2')).toBeInTheDocument()
+
+    // Mesma posição na árvore, mesmo tipo: sem chave, o React preservaria o
+    // estado e a página 2 do filtro antigo continuaria pendurada embaixo da
+    // página 1 do filtro novo.
+    rerender(
+      <CarregarMais
+        filtros={{ ...FILTROS_PADRAO, generos: [35] }}
+        paginaAtual={1}
+        totalPaginas={3}
+      />,
+    )
+
+    expect(screen.queryByText('Filme 2')).not.toBeInTheDocument()
+
+    // E a contagem também volta ao zero: o próximo clique pede a página 2 do
+    // filtro novo, em vez de pular direto para a 3.
+    await userEvent.click(screen.getByRole('button', { name: /carregar mais/i }))
+    const url = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0] as string
+    expect(new URL(url, 'http://x').searchParams.get('pagina')).toBe('2')
+  })
+
   it('mostra recado quando a API falha e mantém o botão', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 429, json: async () => ({}) }))
 

@@ -4,15 +4,20 @@ import { GradeFilmes } from './GradeFilmes'
 import { escreverFiltros } from '@/lib/filtros'
 import type { Filme, Filtros } from '@/lib/tipos'
 
-export function CarregarMais({
-  filtros,
-  paginaAtual,
-  totalPaginas,
-}: {
-  filtros: Filtros
-  paginaAtual: number
-  totalPaginas: number
-}) {
+type Props = { filtros: Filtros; paginaAtual: number; totalPaginas: number }
+
+// As páginas extras só valem para os filtros que as pediram. Trocar um filtro
+// é uma navegação suave: o Server Component repinta a grade, mas o React
+// preservaria o estado daqui (mesma posição, mesmo tipo) e as páginas do filtro
+// antigo continuariam penduradas embaixo — filmes que podem nem estar nos
+// serviços do usuário. A chave derivada dos filtros força a remontagem e devolve
+// o componente à verdade do servidor. Ela mora aqui, e não em quem renderiza,
+// para que nenhum ponto de uso futuro esqueça de repeti-la.
+export function CarregarMais(props: Props) {
+  return <PaginasExtras key={escreverFiltros(props.filtros).toString()} {...props} />
+}
+
+function PaginasExtras({ filtros, paginaAtual, totalPaginas }: Props) {
   const [extras, setExtras] = useState<Filme[]>([])
   const [ultimaPagina, setUltimaPagina] = useState(paginaAtual)
   const [carregando, setCarregando] = useState(false)

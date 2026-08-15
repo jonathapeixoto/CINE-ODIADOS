@@ -11,17 +11,7 @@ export function Cabecalho() {
         >
           O que assistir hoje
         </Link>
-        {/* Sem utilitário `order-*`: a ordem de tabulação segue o DOM, então a
-            ordem visual precisa ser a mesma em toda largura. No mobile ela
-            não cabe ao lado da marca — sendo `w-full` (e vindo depois da
-            marca no DOM), ela força sua própria linha, e "Minha lista"
-            (também sem `order`, cai onde o DOM manda) desce pra linha
-            seguinte. No desktop, uma única linha, nessa mesma ordem do DOM:
-            marca, busca, nav. */}
-        <div className="w-full sm:flex sm:w-auto sm:flex-1 sm:justify-center">
-          <CampoBusca />
-        </div>
-        <nav className="ml-auto sm:ml-0">
+        <nav>
           <Link
             href="/minha-lista"
             className="text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
@@ -29,6 +19,20 @@ export function Cabecalho() {
             Minha lista
           </Link>
         </nav>
+        {/* Sem utilitário `order-*`: a ordem do DOM é a ordem visual em toda
+            largura, e é também a ordem de tabulação — as três concordam sem
+            precisar de CSS pra desalinhar uma da outra. No mobile, marca e
+            nav ficam juntas na linha 1 (a mesma dupla, com o mesmo
+            `justify-between`, que já funcionava sozinha antes desta tarefa);
+            a busca vem depois no DOM e, sendo `w-full`, não cabe nessa linha
+            e cai pra linha 2 — cabeçalho com 2 linhas no mobile, não 3. No
+            desktop ela cabe na mesma linha das outras duas; o
+            `justify-between` do container prende a marca na borda esquerda e
+            a busca (agora a última) na direita, com "Minha lista" flutuando
+            no meio. */}
+        <div className="w-full sm:w-auto">
+          <CampoBusca />
+        </div>
       </div>
     </header>
   )

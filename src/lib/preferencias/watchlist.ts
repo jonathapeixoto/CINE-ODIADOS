@@ -3,7 +3,10 @@ import type { ItemWatchlist } from '@/lib/tipos'
 export const CHAVE_WATCHLIST = 'watchlist'
 
 const ehItem = (valor: unknown): valor is ItemWatchlist =>
-  typeof valor === 'object' && valor !== null && typeof (valor as ItemWatchlist).id === 'number'
+  typeof valor === 'object' &&
+  valor !== null &&
+  typeof (valor as ItemWatchlist).id === 'number' &&
+  typeof (valor as ItemWatchlist).titulo === 'string'
 
 export function lerWatchlist(): ItemWatchlist[] {
   if (typeof window === 'undefined') return []

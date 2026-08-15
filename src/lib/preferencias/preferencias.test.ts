@@ -54,4 +54,9 @@ describe('watchlist', () => {
     localStorage.setItem(CHAVE_WATCHLIST, '{"id":1}')
     expect(lerWatchlist()).toEqual([])
   })
+
+  it('descarta um item da lista sem título', () => {
+    localStorage.setItem(CHAVE_WATCHLIST, '[{"id":1}]')
+    expect(lerWatchlist()).toEqual([])
+  })
 })

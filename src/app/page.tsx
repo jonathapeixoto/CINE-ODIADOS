@@ -26,7 +26,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
       <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
         O que assistir hoje
       </h1>
-      <div className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:gap-5">
+      {/* O sticky vive na linha, não na BarraFiltros: a linha é filha direta
+          da <main> alta, então tem espaço de sobra para "viajar" até colar
+          logo abaixo do cabeçalho. Botão Surpreenda-me anda junto, então
+          continua alcançável durante a rolagem. bg-fundo cobre o vão entre o
+          painel de filtros e o botão para a grade não "vazar" por trás
+          enquanto a linha está grudada. */}
+      <div className="sticky top-[var(--altura-cabecalho)] z-[9] mt-6 flex flex-col-reverse gap-4 bg-fundo py-3 sm:flex-row sm:items-center sm:gap-5">
         <div className="min-w-0 flex-1">
           <BarraFiltros filtros={filtros} provedores={provedores} generos={generos} />
         </div>

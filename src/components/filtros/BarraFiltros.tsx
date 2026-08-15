@@ -94,7 +94,7 @@ export function BarraFiltros({
   return (
     <section
       aria-label="Filtros"
-      className="sticky top-[var(--altura-cabecalho)] z-[9] rounded-2xl border border-borda bg-superficie/95 px-4 py-3 shadow-lg shadow-fundo/40 backdrop-blur sm:px-5 sm:py-4"
+      className="rounded-2xl border border-borda bg-superficie/95 px-4 py-3 shadow-lg shadow-fundo/40 backdrop-blur sm:px-5 sm:py-4"
     >
       <button
         type="button"

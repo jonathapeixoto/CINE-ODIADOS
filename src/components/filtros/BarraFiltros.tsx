@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { escreverFiltros } from '@/lib/filtros'
+import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
 import type { Filtros, Genero, Provedor } from '@/lib/tipos'
 import { SERVICOS_NA_BARRA, provedoresVisiveis } from './provedores-visiveis'
 
@@ -89,6 +90,14 @@ export function BarraFiltros({
   // deixaria a tela vazia sem motivo aparente.
   const aplicar = (mudanca: Partial<Filtros>) => {
     const novos = { ...filtros, ...mudanca, pagina: 1 }
+
+    // Esta barra é a superfície de edição dos serviços assinados (§3 do
+    // design: "primeira visita e depois editável"). Sem gravar o cookie, a
+    // troca valeria só para a URL atual e voltar para "/" — o que o wordmark do
+    // app faz — ressuscitaria a escolha da primeira visita. Lista vazia também
+    // é escolha: escolheuServicos olha a presença do cookie, não o conteúdo.
+    if (mudanca.servicos !== undefined) salvarServicos(novos.servicos)
+
     router.push(`/?${escreverFiltros(novos).toString()}`, { scroll: false })
   }
 

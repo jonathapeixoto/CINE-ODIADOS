@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   CHAVE_WATCHLIST,
+  COOKIE_SERVICOS,
   alternarWatchlist,
   codificarServicos,
   decodificarServicos,
   estaNaWatchlist,
   lerWatchlist,
 } from '@/lib/preferencias'
+import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
 
 describe('cookie de serviços', () => {
   it('codifica ids como lista separada por vírgula', () => {
@@ -19,6 +21,20 @@ describe('cookie de serviços', () => {
 
   it('devolve lista vazia quando o cookie não existe', () => {
     expect(decodificarServicos(undefined)).toEqual([])
+  })
+
+  // A barra de filtros grava a lista vazia quando o usuário desliga o último
+  // serviço. O cookie precisa existir mesmo assim, senão a home acharia que
+  // ninguém escolheu nada e mandaria de volta para a tela de primeira visita.
+  it('grava um cookie presente mesmo com a lista vazia', () => {
+    salvarServicos([])
+    expect(document.cookie).toContain(`${COOKIE_SERVICOS}=`)
+    expect(decodificarServicos('')).toEqual([])
+  })
+
+  it('grava os ids escolhidos', () => {
+    salvarServicos([8, 119])
+    expect(document.cookie).toContain(`${COOKIE_SERVICOS}=8,119`)
   })
 })
 

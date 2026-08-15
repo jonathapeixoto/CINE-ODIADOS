@@ -5,11 +5,12 @@ import { BarraFiltros } from '@/components/filtros/BarraFiltros'
 import { SERVICOS_NA_BARRA } from '@/components/filtros/provedores-visiveis'
 import { FILTROS_PADRAO } from '@/lib/filtros'
 
-const { estado } = vi.hoisted(() => ({ estado: { push: vi.fn() } }))
+const { estado } = vi.hoisted(() => ({ estado: { push: vi.fn(), salvar: vi.fn() } }))
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: estado.push }),
 }))
+vi.mock('@/lib/preferencias/servicos-cliente', () => ({ salvarServicos: estado.salvar }))
 
 const provedores = [
   { id: 8, nome: 'Netflix', logo: 'https://image.tmdb.org/t/p/w92/n.jpg', prioridade: 1 },
@@ -23,7 +24,10 @@ const generos = [
 const urlDoPush = () => new URL(estado.push.mock.calls.at(-1)![0], 'http://x')
 
 describe('BarraFiltros', () => {
-  beforeEach(() => estado.push.mockClear())
+  beforeEach(() => {
+    estado.push.mockClear()
+    estado.salvar.mockClear()
+  })
 
   it('liga um serviço e reescreve a URL', async () => {
     render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
@@ -42,6 +46,39 @@ describe('BarraFiltros', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Netflix' }))
 
     expect(urlDoPush().searchParams.get('servicos')).toBe('119')
+  })
+
+  // §3 do design: os serviços assinados são escolhidos na primeira visita "e
+  // depois editáveis". A barra é essa superfície de edição, então a troca
+  // precisa chegar ao cookie — só na URL, voltar para "/" (o que o wordmark do
+  // app faz) ressuscitaria a escolha da primeira visita.
+  it('grava no cookie os serviços ligados pela barra', async () => {
+    render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Netflix' }))
+
+    expect(estado.salvar).toHaveBeenCalledWith([8])
+  })
+
+  it('grava a lista vazia ao desligar o último serviço', async () => {
+    render(
+      <BarraFiltros filtros={{ ...FILTROS_PADRAO, servicos: [8] }} provedores={provedores} generos={generos} />,
+    )
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Netflix' }))
+
+    // Lista vazia continua sendo uma escolha: escolheuServicos olha a presença
+    // do cookie, não o conteúdo.
+    expect(estado.salvar).toHaveBeenCalledWith([])
+    expect(urlDoPush().searchParams.get('servicos')).toBe('todos')
+  })
+
+  it('não mexe no cookie quando o filtro alterado não é de serviço', async () => {
+    render(<BarraFiltros filtros={FILTROS_PADRAO} provedores={provedores} generos={generos} />)
+
+    await userEvent.selectOptions(screen.getByLabelText('Nota mínima'), '7')
+
+    expect(estado.salvar).not.toHaveBeenCalled()
   })
 
   it('volta para a página 1 ao mexer em qualquer filtro', async () => {

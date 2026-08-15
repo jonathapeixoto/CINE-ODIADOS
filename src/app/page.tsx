@@ -48,7 +48,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
       ) : (
         <>
           <div className="mt-8">
-            <GradeFilmes filmes={pagina.filmes} />
+            <GradeFilmes filmes={pagina.filmes} priorizarPrimeiros />
           </div>
           <CarregarMais
             filtros={filtros}

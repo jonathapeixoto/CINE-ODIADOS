@@ -35,7 +35,7 @@ export default async function PaginaBusca({
         </p>
       ) : (
         <div className="mt-8">
-          <GradeFilmes filmes={pagina.filmes} />
+          <GradeFilmes filmes={pagina.filmes} priorizarPrimeiros />
         </div>
       )}
     </main>

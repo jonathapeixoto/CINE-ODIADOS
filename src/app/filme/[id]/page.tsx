@@ -81,6 +81,7 @@ export default async function PaginaFilme({ params }: Props) {
               alt={filme.titulo}
               width={220}
               height={330}
+              priority
               className="h-auto w-28 shrink-0 rounded-lg object-cover ring-1 ring-borda shadow-xl shadow-fundo/60 sm:w-36 md:w-44"
             />
           ) : (

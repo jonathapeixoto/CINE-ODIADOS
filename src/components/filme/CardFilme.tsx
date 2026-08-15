@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Filme } from '@/lib/tipos'
 
-export function CardFilme({ filme }: { filme: Filme }) {
+export function CardFilme({ filme, prioridade = false }: { filme: Filme; prioridade?: boolean }) {
   return (
     <Link href={`/filme/${filme.id}`} className="group block">
       {filme.poster ? (
@@ -12,6 +12,7 @@ export function CardFilme({ filme }: { filme: Filme }) {
           width={342}
           height={513}
           sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 45vw"
+          priority={prioridade}
           className="h-auto w-full rounded-lg object-cover ring-1 ring-borda transition group-hover:ring-2 group-hover:ring-acento"
         />
       ) : (

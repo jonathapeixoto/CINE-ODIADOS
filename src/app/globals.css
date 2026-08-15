@@ -23,6 +23,18 @@
   --font-mono: var(--nf-mono), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 
+/* Altura renderizada do Cabecalho (sticky top-0), medida no navegador.
+   A BarraFiltros gruda logo abaixo dele e depende deste valor.
+   Se o cabeçalho mudar de altura, meça de novo e atualize aqui. */
+:root {
+  --altura-cabecalho: 103px;
+}
+@media (min-width: 640px) {
+  :root {
+    --altura-cabecalho: 63px;
+  }
+}
+
 /* Indicador de foco visível em toda a interface, incluindo componentes futuros. */
 :focus-visible {
   outline-width: 2px;

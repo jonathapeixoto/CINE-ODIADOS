@@ -35,8 +35,16 @@ test('escolher serviços, filtrar, sortear, abrir detalhe e salvar na lista', as
   await expect(page.getByRole('link', { name: /Filme de Teste/ })).toBeVisible()
 })
 
-test('o rodapé traz as atribuições obrigatórias em toda página', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByText(/fornecidos por JustWatch/i)).toBeVisible()
-  await expect(page.getByText(/não é endossado, certificado ou aprovado pelo TMDB/i)).toBeVisible()
-})
+// As duas frases são condição de acesso à API do TMDB, não cortesia: a
+// documentação do JustWatch fala em revogar o acesso de quem não atribui. Por
+// isso o teste percorre as rotas de verdade em vez de conferir só a home — um
+// teste que promete "toda página" e visita uma só é pior do que teste nenhum.
+const ROTAS = ['/', '/busca?q=teste', '/minha-lista']
+
+for (const rota of ROTAS) {
+  test(`o rodapé traz as atribuições obrigatórias em ${rota}`, async ({ page }) => {
+    await page.goto(rota)
+    await expect(page.getByText(/fornecidos por JustWatch/i)).toBeVisible()
+    await expect(page.getByText(/não é endossado, certificado ou aprovado pelo TMDB/i)).toBeVisible()
+  })
+}

@@ -24,7 +24,7 @@
 }
 
 /* Altura renderizada do Cabecalho (sticky top-0), medida no navegador.
-   A BarraFiltros gruda logo abaixo dele e depende deste valor.
+   A linha de filtros fica sticky logo abaixo dele e depende deste valor.
    Se o cabeçalho mudar de altura, meça de novo e atualize aqui. */
 :root {
   --altura-cabecalho: 103px;

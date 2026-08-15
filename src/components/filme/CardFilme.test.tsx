@@ -41,4 +41,16 @@ describe('CardFilme', () => {
     render(<CardFilme filme={{ ...filme, ano: null }} />)
     expect(screen.queryByText('2010')).not.toBeInTheDocument()
   })
+
+  it('marca o pôster como prioridade quando prioridade=true', () => {
+    render(<CardFilme filme={filme} prioridade />)
+    const img = screen.getByAltText('A Origem')
+    expect(img).toHaveAttribute('data-priority', 'true')
+  })
+
+  it('não marca o pôster como prioridade por padrão', () => {
+    render(<CardFilme filme={filme} />)
+    const img = screen.getByAltText('A Origem')
+    expect(img).toHaveAttribute('data-priority', 'false')
+  })
 })

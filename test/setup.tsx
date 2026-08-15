@@ -4,7 +4,7 @@ import type { ImgHTMLAttributes } from 'react'
 
 // next/image depende do runtime do Next; no jsdom basta uma <img>.
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...resto }: ImgHTMLAttributes<HTMLImageElement>) => (
-    <img src={typeof src === 'string' ? src : ''} alt={alt} {...resto} />
+  default: ({ src, alt, priority, ...resto }: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) => (
+    <img src={typeof src === 'string' ? src : ''} alt={alt} data-priority={priority?.toString()} {...resto} />
   ),
 }))

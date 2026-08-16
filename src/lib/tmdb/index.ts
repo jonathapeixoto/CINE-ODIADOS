@@ -18,7 +18,6 @@ import {
   mapearGenero,
   mapearProvedor,
   ordenarProvedores,
-  urlImagem,
 } from './mapeadores'
 import { ordenarPorPortugues } from './portugues'
 import type {
@@ -125,14 +124,9 @@ export async function listarProvedores(): Promise<Provedor[]> {
     // continua de pé com um serviço a menos, que é a falha benigna.
     if (achado === undefined) return []
 
-    return [
-      {
-        id: servico.principal,
-        nome: servico.rotulo,
-        logo: urlImagem(achado.logo_path, 'w92'),
-        prioridade: indice,
-      },
-    ]
+    // Parte de mapearProvedor para não duplicar o tamanho do logo aqui: só o
+    // nome e a posição são conhecimento da curadoria, o resto é do TMDB.
+    return [{ ...mapearProvedor(achado), nome: servico.rotulo, prioridade: indice }]
   })
 }
 

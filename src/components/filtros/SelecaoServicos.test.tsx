@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SelecaoServicos } from '@/components/filtros/SelecaoServicos'
-import { SERVICOS_NA_PRIMEIRA_VISITA } from '@/components/filtros/provedores-visiveis'
 
 const { estado } = vi.hoisted(() => ({
   estado: { salvar: vi.fn(), refresh: vi.fn() },
@@ -45,24 +44,22 @@ describe('SelecaoServicos', () => {
     expect(screen.getByAltText('Netflix')).toBeInTheDocument()
   })
 
-  it('limita a primeira tela e revela o resto por um botão', async () => {
-    const muitos = Array.from({ length: 40 }, (_, i) => ({
+  it('mostra a lista inteira de serviços, sem gaveta', () => {
+    // Vinte e cinco é de propósito maior que o roster real de treze: o que se
+    // prova aqui é o contrato do componente — ele mostra a lista que recebe,
+    // qualquer que seja o tamanho — e não o tamanho da lista curada.
+    const muitos = Array.from({ length: 25 }, (_, i) => ({
       id: i + 1,
       nome: `Serviço ${i + 1}`,
       logo: null,
-      prioridade: i + 1,
+      prioridade: i,
     }))
 
     render(<SelecaoServicos provedores={muitos} />)
 
-    expect(
-      screen.getByRole('checkbox', { name: `Serviço ${SERVICOS_NA_PRIMEIRA_VISITA}` }),
-    ).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'Serviço 40' })).not.toBeInTheDocument()
-
-    await userEvent.click(screen.getByRole('button', { name: /ver mais 20 serviços/i }))
-
-    expect(screen.getByRole('checkbox', { name: 'Serviço 40' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Serviço 1' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Serviço 25' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /ver mais/i })).not.toBeInTheDocument()
   })
 
   it('mantém o nome acessível quando o serviço não tem logo', () => {

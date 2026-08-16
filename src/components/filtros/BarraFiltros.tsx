@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import { escreverFiltros } from '@/lib/filtros'
 import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
 import type { Filtros, Genero, Provedor } from '@/lib/tipos'
-import { SERVICOS_NA_BARRA, provedoresVisiveis } from './provedores-visiveis'
 
 const NOTAS = [6, 7, 8]
 const DURACOES = [90, 120, 150]
@@ -125,7 +124,6 @@ export function BarraFiltros({
 }) {
   const router = useRouter()
   const [aberto, setAberto] = useState(false)
-  const [todosOsServicos, setTodosOsServicos] = useState(false)
   const raizRef = useRef<HTMLElement>(null)
 
   // O painel cobre a grade em vez de empurrá-la, então precisa fechar como
@@ -147,11 +145,6 @@ export function BarraFiltros({
       document.removeEventListener('pointerdown', aoApontar)
     }
   }, [aberto])
-
-  const servicosNaTela = todosOsServicos
-    ? provedores
-    : provedoresVisiveis(provedores, filtros.servicos, SERVICOS_NA_BARRA)
-  const escondidos = provedores.length - servicosNaTela.length
 
   // Mexer em qualquer filtro volta para a página 1: manter a página antiga
   // deixaria a tela vazia sem motivo aparente.
@@ -217,7 +210,7 @@ export function BarraFiltros({
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className={classeRotulo}>Serviços</legend>
           <div className="mt-3 flex flex-wrap gap-2">
-            {servicosNaTela.map((provedor) => (
+            {provedores.map((provedor) => (
               <label key={provedor.id} className={classeChip}>
                 <input
                   type="checkbox"
@@ -228,17 +221,6 @@ export function BarraFiltros({
                 {provedor.nome}
               </label>
             ))}
-            {(todosOsServicos || escondidos > 0) && (
-              <button
-                type="button"
-                aria-expanded={todosOsServicos}
-                onClick={() => setTodosOsServicos((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-sm border border-dashed border-borda px-3 py-1.5 text-sm text-texto-fraco transition-colors hover:border-texto-fraco hover:text-texto"
-              >
-                {todosOsServicos ? 'Menos serviços' : `Mais ${escondidos} serviços`}
-                <IconeChevron aberto={todosOsServicos} className="h-3 w-3" />
-              </button>
-            )}
           </div>
         </fieldset>
 

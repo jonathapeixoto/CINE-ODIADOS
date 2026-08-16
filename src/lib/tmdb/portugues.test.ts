@@ -41,6 +41,10 @@ describe('pontuarPortugues', () => {
   it('não confunde espaço em branco com tradução', () => {
     expect(pontuarPortugues(cru({ title: '   ', overview: '  ' }))).toBe(0)
   })
+
+  it('não dá ponto ao título quando falta o original: sem original não há como provar tradução', () => {
+    expect(pontuarPortugues(cru({ title: 'A Origem', original_title: undefined }))).toBe(0)
+  })
 })
 
 describe('ordenarPorPortugues', () => {
@@ -63,5 +67,18 @@ describe('ordenarPorPortugues', () => {
     const original = [cru({ id: 1 }), cru({ id: 2, original_language: 'pt' })]
     ordenarPorPortugues(original)
     expect(original.map((f) => f.id)).toEqual([1, 2])
+  })
+
+  it('mantém a ordem de entrada dentro de um empate no meio de várias faixas', () => {
+    // Três faixas de pontuação (2, 1 e 0), com um empate na faixa do meio. O
+    // líder tem que vir na frente e o par empatado tem que manter a ordem em
+    // que chegou — é exatamente o caso para o qual a estabilidade existe.
+    const lider = cru({ id: 100, original_language: 'pt' })
+    const empatadoA = cru({ id: 21, title: 'A Origem' })
+    const empatadoB = cru({ id: 22, title: 'Outro Nome' })
+    const semSinal = cru({ id: 5 })
+
+    const ordenado = ordenarPorPortugues([empatadoA, lider, empatadoB, semSinal])
+    expect(ordenado.map((f) => f.id)).toEqual([100, 21, 22, 5])
   })
 })

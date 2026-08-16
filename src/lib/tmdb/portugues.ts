@@ -18,8 +18,10 @@ export function pontuarPortugues(cru: FilmeCru): number {
   return (
     // Falado em português: não depende de dublagem nenhuma.
     (cru.original_language === 'pt' ? 2 : 0) +
-    // Título brasileiro existe, logo houve lançamento comercial aqui.
-    (traduzido !== '' && traduzido !== original ? 1 : 0) +
+    // Título brasileiro existe, logo houve lançamento comercial aqui. Exige
+    // original preenchido também: sem original para comparar, um traduzido
+    // sozinho não prova tradução nenhuma — mesma exigência da regra de overview.
+    (original !== '' && traduzido !== '' && traduzido !== original ? 1 : 0) +
     // O TMDB devolve overview vazio quando não há tradução no idioma pedido.
     (preenchido(cru.overview) !== '' ? 1 : 0)
   )

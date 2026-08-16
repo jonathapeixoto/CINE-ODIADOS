@@ -59,6 +59,21 @@ CI e localmente sem segredo nenhum.
   busca; não há estado de filtro duplicado em React. O botão voltar funciona,
   qualquer combinação de filtros é um link compartilhável, e a primeira pintura
   do servidor já vem com o resultado certo.
+- **A lista de serviços é curada, e a grade só mostra filme que dá para
+  assistir.** `src/lib/servicos/populares.ts` fixa os treze serviços de peso no
+  Brasil, porque o `display_priority` do TMDB não mede popularidade brasileira —
+  ele põe o Max na posição 28, atrás de canais de nicho. Cada serviço carrega os
+  ids irmãos do TMDB (a Netflix e a "Netflix Standard with Ads" são entradas
+  diferentes), senão o filtro perderia catálogo. E toda consulta de descoberta
+  leva `watch_region=BR` com `with_watch_monetization_types`, então filme sem
+  distribuição nenhuma no Brasil não aparece na grade — a busca por título
+  continua achando qualquer filme, que é o caminho para descobrir que um título
+  não está em lugar nenhum.
+- **Filme em português vem primeiro, sem promessa que não dá para cumprir.** O
+  TMDB não tem dado de dublagem nem de legenda, então `src/lib/tmdb/portugues.ts`
+  pontua sinais indiretos (idioma original, título brasileiro, sinopse
+  traduzida) e usa isso só como desempate dentro da página. Nada some por causa
+  do sinal, e nenhum selo de "dublado" aparece na tela.
 - **Sem backend.** Os serviços de streaming assinados ficam num cookie
   (`src/lib/preferencias/servicos-servidor.ts`), para o Server Component
   conseguir ler a preferência já na primeira renderização — sem isso, a home
@@ -101,3 +116,8 @@ o teste de ponta a ponta apontar para o servidor falso.
 A decisão de design completa — por que Next.js, por que cookie em vez de conta de
 usuário, o que foi descartado e por quê — está em
 [`docs/superpowers/specs/2026-08-13-catalogo-streaming-design.md`](docs/superpowers/specs/2026-08-13-catalogo-streaming-design.md).
+
+A curadoria brasileira que veio depois — o allowlist de serviços, o portão de
+disponibilidade e a priorização do português, com os ids do TMDB conferidos e o
+que foi descartado — está em
+[`docs/superpowers/specs/2026-08-16-curadoria-brasil-design.md`](docs/superpowers/specs/2026-08-16-curadoria-brasil-design.md).

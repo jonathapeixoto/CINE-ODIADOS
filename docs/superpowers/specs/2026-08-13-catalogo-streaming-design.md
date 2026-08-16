@@ -211,6 +211,11 @@ com `w342` na grade e `w780` no backdrop.
 
 ### 5.2 Regras de tradução dos filtros
 
+> **Superado em 2026-08-16** por
+> [`2026-08-16-curadoria-brasil-design.md`](2026-08-16-curadoria-brasil-design.md):
+> a lista de serviços passou a ser curada e o filtro de disponibilidade passou a
+> valer sempre. O texto abaixo fica como registro do desenho original.
+
 - `watch_region=BR` **sempre** que houver filtro de provedor — a API exige.
 - `with_watch_monetization_types=flatrate` — "eu assino esse serviço" significa
   incluído na assinatura, não disponível para aluguel.
@@ -251,12 +256,22 @@ O projeto não gera receita, o que o mantém dentro do uso não comercial permit
 
 ### 6.1 Primeira visita
 
+> **Superado em 2026-08-16** por
+> [`2026-08-16-curadoria-brasil-design.md`](2026-08-16-curadoria-brasil-design.md):
+> a lista de serviços passou a ser curada e o filtro de disponibilidade passou a
+> valer sempre. O texto abaixo fica como registro do desenho original.
+
 Grade com os logos dos serviços disponíveis no Brasil, vinda de
 `watch/providers/movie` — nada chumbado no código. Seleção múltipla, botão
 "ver filmes", cookie gravado. Sem cadastro e sem tutorial. Quem pular a seleção
 vê o catálogo sem filtro de serviço, e os chips no topo continuam disponíveis.
 
 ### 6.2 Home
+
+> **Superado em 2026-08-16** por
+> [`2026-08-16-curadoria-brasil-design.md`](2026-08-16-curadoria-brasil-design.md):
+> a lista de serviços passou a ser curada e o filtro de disponibilidade passou a
+> valer sempre. O texto abaixo fica como registro do desenho original.
 
 Barra de filtros fixa no topo (gaveta no celular): serviços, gêneros, nota
 mínima, duração máxima, período, ordenação. Ao lado, com peso visual

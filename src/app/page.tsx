@@ -22,10 +22,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<Par
     listarGeneros(),
   ])
 
-  // O destaque é o primeiro resultado da própria consulta — não uma escolha
-  // editorial. Por isso ele troca quando um filtro troca, e o olho-de-boi pode
-  // dizer, com honestidade, por que aquele filme está ali. Sem arte de fundo
-  // não há destaque: um herói sem imagem é só um título grande no vazio.
+  // O destaque é o primeiro resultado da página como o site a apresenta — o
+  // primeiro depois do desempate por português (src/lib/tmdb/portugues.ts), não
+  // a ordem crua do TMDB. Continua não sendo escolha editorial: troca quando um
+  // filtro troca, e o olho-de-boi pode dizer por que aquele filme está ali. Sem
+  // arte de fundo não há destaque: um herói sem imagem é só um título grande no
+  // vazio.
   const destaque = pagina.filmes.find((filme) => filme.backdrop !== null) ?? null
 
   return (

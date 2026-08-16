@@ -114,6 +114,24 @@ describe('descobrirFilmes', () => {
     expect(filme.poster).toBeNull()
     expect(filme.ano).toBeNull()
   })
+
+  it('põe os filmes em português na frente da página', async () => {
+    servidor.use(
+      http.get(`${BASE}/discover/movie`, () =>
+        HttpResponse.json({
+          page: 1,
+          total_pages: 1,
+          total_results: 2,
+          results: [
+            { ...filmeCru, id: 1, title: 'Inception', original_title: 'Inception', overview: '' },
+            { ...filmeCru, id: 2, title: 'A Origem', original_title: 'Inception' },
+          ],
+        }),
+      ),
+    )
+
+    expect((await descobrirFilmes(FILTROS_PADRAO)).filmes.map((f) => f.id)).toEqual([2, 1])
+  })
 })
 
 describe('obterFilme', () => {
@@ -320,5 +338,25 @@ describe('listas e busca', () => {
     expect(url?.searchParams.get('query')).toBe('origem')
     expect(url?.searchParams.get('with_watch_providers')).toBeNull()
     expect(pagina.filmes[0].titulo).toBe('A Origem')
+  })
+
+  it('não reordena os resultados da busca', async () => {
+    servidor.use(
+      http.get(`${BASE}/search/movie`, () =>
+        HttpResponse.json({
+          page: 1,
+          total_pages: 1,
+          total_results: 2,
+          results: [
+            { ...filmeCru, id: 1, title: 'Inception', original_title: 'Inception', overview: '' },
+            { ...filmeCru, id: 2, title: 'A Origem', original_title: 'Inception' },
+          ],
+        }),
+      ),
+    )
+
+    // Na busca a ordem é a relevância do termo digitado; mexer nela atrapalha
+    // justamente quem está procurando um título específico.
+    expect((await buscarPorTitulo('inception', 1)).filmes.map((f) => f.id)).toEqual([1, 2])
   })
 })

@@ -20,6 +20,7 @@ import {
   ordenarProvedores,
   urlImagem,
 } from './mapeadores'
+import { ordenarPorPortugues } from './portugues'
 import type {
   FilmeDetalhadoCru,
   GenerosCrus,
@@ -41,7 +42,11 @@ export async function descobrirFilmes(filtros: Filtros): Promise<PaginaDeFilmes>
   const lista = await buscarTmdb<ListaCrua>('/discover/movie', paraQueryTmdb(filtros), {
     revalidate: REVALIDATE.descoberta,
   })
-  return paraPagina(lista)
+
+  // O desempate mora aqui e não em paraPagina, para buscarPorTitulo não o
+  // herdar por acidente. É desempate local: reordena os 20 desta página, não
+  // promove um filme da página 4 para a 1.
+  return paraPagina({ ...lista, results: ordenarPorPortugues(lista.results) })
 }
 
 export async function buscarPorTitulo(termo: string, pagina: number): Promise<PaginaDeFilmes> {

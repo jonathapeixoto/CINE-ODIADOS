@@ -2,6 +2,7 @@ export type FilmeCru = {
   id: number
   title?: string
   original_title?: string
+  original_language?: string
   overview?: string
   poster_path?: string | null
   backdrop_path?: string | null

@@ -4,6 +4,7 @@ out
 coverage
 playwright-report
 test-results
+.superpowers
 .env.local
 next-env.d.ts
 *.tsbuildinfo

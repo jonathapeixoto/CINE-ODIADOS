@@ -57,6 +57,12 @@ describe('filtrarCurados', () => {
   it('devolve lista vazia sem reclamar', () => {
     expect(filtrarCurados([])).toEqual([])
   })
+
+  it('remove id repetido, preservando a primeira ocorrência', () => {
+    // ?servicos=8,8 não pode acender dois filtros na barra nem duplicar
+    // "Netflix" no resumo.
+    expect(filtrarCurados([8, 8, 337])).toEqual([8, 337])
+  })
 })
 
 describe('idsParaFiltro', () => {

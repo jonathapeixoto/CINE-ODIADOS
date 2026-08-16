@@ -27,7 +27,7 @@ export type ServicoCurado = {
  * na região BR; Apple TV Store (2), Google Play Filmes (3) e Amazon Video (10)
  * são lojas de aluguel, e a pergunta da barra é "quais serviços você assina".
  */
-export const SERVICOS_POPULARES: ServicoCurado[] = [
+export const SERVICOS_POPULARES: readonly ServicoCurado[] = [
   { rotulo: 'Netflix', principal: 8, apelidos: [1796] },
   { rotulo: 'Prime Video', principal: 119, apelidos: [2100] },
   { rotulo: 'Max', principal: 1899, apelidos: [1825] },
@@ -48,7 +48,18 @@ const PRINCIPAIS = new Set(SERVICOS_POPULARES.map((servico) => servico.principal
 /** Apelido responde `false`: ele entra no filtro, mas não é serviço marcável. */
 export const ehServicoCurado = (id: number): boolean => PRINCIPAIS.has(id)
 
-export const filtrarCurados = (ids: number[]): number[] => ids.filter(ehServicoCurado)
+/**
+ * Descarta o que não é curado e o que já apareceu — `?servicos=8,8` na URL não
+ * pode virar dois filtros ativos na barra nem "Netflix · Netflix" no resumo.
+ */
+export const filtrarCurados = (ids: number[]): number[] => {
+  const vistos = new Set<number>()
+  return ids.filter((id) => {
+    if (!ehServicoCurado(id) || vistos.has(id)) return false
+    vistos.add(id)
+    return true
+  })
+}
 
 /**
  * Traduz serviços marcados nos ids que o TMDB entende, apelidos incluídos.

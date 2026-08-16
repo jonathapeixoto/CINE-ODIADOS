@@ -20,6 +20,14 @@ describe('lerFiltros', () => {
     expect(lerFiltros({ servicos: '8,abc,-3,0,119' }, []).servicos).toEqual([8, 119])
   })
 
+  it('descarta serviço que não está no allowlist curado', () => {
+    // Vindo da URL e vindo do cookie: quem visitou o site antes da curadoria
+    // tem serviço aposentado gravado, e ele não tem caixa na barra para ser
+    // desligado — seria um filtro ativo e invisível.
+    expect(lerFiltros({ servicos: '8,692' }, []).servicos).toEqual([8])
+    expect(lerFiltros({}, [8, 692]).servicos).toEqual([8])
+  })
+
   it('cai no padrão quando um valor escalar é inválido', () => {
     const f = lerFiltros({ nota: '99', duracao: 'x', ordem: 'aleatoria', pagina: '0' }, [])
     expect(f.notaMinima).toBeNull()

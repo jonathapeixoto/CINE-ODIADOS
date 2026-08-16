@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { Filtros } from '@/lib/tipos'
+import { filtrarCurados } from '@/lib/servicos/populares'
 import {
   esquemaAno,
   esquemaDuracao,
@@ -39,10 +40,14 @@ const lerNumero = (valor: string | undefined, esquema: z.ZodNumber): number | nu
 export function lerFiltros(params: ParamsBrutos, servicosPadrao: number[]): Filtros {
   const bruto = (chave: string) => primeiro(params[chave])
   const servicos = bruto('servicos')
+  const escolhidos =
+    servicos === undefined ? servicosPadrao : servicos === 'todos' ? [] : lerIds(servicos)
 
   return {
-    servicos:
-      servicos === undefined ? servicosPadrao : servicos === 'todos' ? [] : lerIds(servicos),
+    // Único funil por onde URL e cookie viram Filtros, e por isso o único lugar
+    // que precisa peneirar: um id fora do roster não tem caixa na barra, e
+    // deixá-lo passar daria um filtro ativo que o usuário não consegue desligar.
+    servicos: filtrarCurados(escolhidos),
     generos: lerIds(bruto('generos')),
     notaMinima: lerNumero(bruto('nota'), esquemaNota),
     duracaoMaxMin: lerNumero(bruto('duracao'), esquemaDuracao),

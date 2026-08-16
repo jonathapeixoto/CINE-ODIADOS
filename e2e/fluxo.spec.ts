@@ -10,7 +10,10 @@ test('escolher serviços, filtrar, sortear, abrir detalhe e salvar na lista', as
   // está fora do allowlist brasileiro, e ele não pode ter caixa em tela alguma.
   await expect(page.getByRole('checkbox', { name: 'Cultpix' })).toHaveCount(0)
   // "Amazon Prime Video" aparece pelo rótulo curado, não pelo nome do TMDB.
-  await expect(page.getByRole('checkbox', { name: 'Prime Video' })).toBeVisible()
+  // `exact: true` importa aqui: por padrão getByRole casa substring, e
+  // 'Prime Video' bateria em "Amazon Prime Video" mesmo se a curadoria
+  // regredisse — o que provaria o teste, não o produto.
+  await expect(page.getByRole('checkbox', { name: 'Prime Video', exact: true })).toBeVisible()
 
   await page.getByRole('checkbox', { name: 'Netflix' }).check()
   await page.getByRole('button', { name: /ver filmes/i }).click()

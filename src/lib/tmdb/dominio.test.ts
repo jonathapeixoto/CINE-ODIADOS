@@ -89,8 +89,8 @@ describe('descobrirFilmes', () => {
 
     await descobrirFilmes({ ...FILTROS_PADRAO, servicos: [8, 119], notaMinima: 7 })
 
-    expect(url?.searchParams.get('with_watch_providers')).toBe('8|119')
-    expect(url?.searchParams.get('with_watch_monetization_types')).toBe('flatrate')
+    expect(url?.searchParams.get('with_watch_providers')).toBe('8|1796|119|2100')
+    expect(url?.searchParams.get('with_watch_monetization_types')).toBe('flatrate|free|ads')
     expect(url?.searchParams.get('watch_region')).toBe('BR')
     expect(url?.searchParams.get('vote_count.gte')).toBe('100')
   })

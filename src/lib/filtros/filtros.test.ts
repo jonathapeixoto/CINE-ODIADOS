@@ -58,17 +58,28 @@ describe('escreverFiltros', () => {
 })
 
 describe('paraQueryTmdb', () => {
-  it('exige watch_region e flatrate junto com o filtro de provedor', () => {
+  it('expande os apelidos do serviço marcado e cobra só o que já está pago', () => {
     const q = paraQueryTmdb({ ...FILTROS_PADRAO, servicos: [8, 119] })
     expect(q.watch_region).toBe('BR')
-    expect(q.with_watch_providers).toBe('8|119')
-    expect(q.with_watch_monetization_types).toBe('flatrate')
+    // 1796 e 2100 são as entradas "with Ads" dos mesmos dois serviços no TMDB.
+    expect(q.with_watch_providers).toBe('8|1796|119|2100')
+    // Quem marcou "eu assino Netflix" não quer ver que pode alugar por R$ 19,90.
+    expect(q.with_watch_monetization_types).toBe('flatrate|free|ads')
   })
 
-  it('não envia parâmetros de provedor quando nenhum serviço foi escolhido', () => {
+  it('mantém o portão de disponibilidade quando nenhum serviço foi escolhido', () => {
     const q = paraQueryTmdb({ ...FILTROS_PADRAO })
-    expect(q.watch_region).toBeUndefined()
+    expect(q.watch_region).toBe('BR')
     expect(q.with_watch_providers).toBeUndefined()
+    expect(q.with_watch_monetization_types).toBe('flatrate|free|ads|rent|buy')
+  })
+
+  it('abre o portão quando só sobram serviços fora do allowlist', () => {
+    // Rede de segurança: with_watch_providers vazio faria o TMDB devolver zero
+    // resultado, e a home ficaria vazia sem explicação.
+    const q = paraQueryTmdb({ ...FILTROS_PADRAO, servicos: [692] })
+    expect(q.with_watch_providers).toBeUndefined()
+    expect(q.with_watch_monetization_types).toBe('flatrate|free|ads|rent|buy')
   })
 
   it('une gêneros com E lógico', () => {

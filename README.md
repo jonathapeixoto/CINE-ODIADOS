@@ -1,4 +1,4 @@
-# O que assistir hoje
+# CineOdiados
 
 Catálogo de filmes disponíveis nos serviços de streaming que você assina no Brasil,
 com filtros que vivem na URL e um botão que sorteia um filme entre **todos** os

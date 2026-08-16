@@ -11,8 +11,8 @@ export default async function PaginaBusca({
 
   if (termo === '') {
     return (
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
-        <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
+      <main className="envelope flex-1 py-10">
+        <h1 className="font-display text-3xl font-bold tracking-tight text-texto sm:text-4xl">
           Buscar filme
         </h1>
         <p className="mt-4 text-sm text-texto-fraco sm:text-base">
@@ -25,8 +25,8 @@ export default async function PaginaBusca({
   const pagina = await buscarPorTitulo(termo, 1)
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
-      <h1 className="text-balance font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
+    <main className="envelope flex-1 py-10">
+      <h1 className="text-balance font-display text-3xl font-bold tracking-tight text-texto sm:text-4xl">
         Resultados para “{termo}”
       </h1>
       {pagina.filmes.length === 0 ? (

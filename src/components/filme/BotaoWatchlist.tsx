@@ -25,7 +25,25 @@ function IconeMarcador({ preenchido }: { preenchido: boolean }) {
   )
 }
 
-export function BotaoWatchlist({ filme }: { filme: ItemWatchlist }) {
+/**
+ * `destaque` é o par do botão claro do herói: mesma altura e mesmo peso, em
+ * cinza translúcido, para os dois lerem como um par de ações. `linha` é a
+ * versão discreta que mora no meio do texto da página de detalhe.
+ */
+type Variante = 'linha' | 'destaque'
+
+const TAMANHO: Record<Variante, string> = {
+  linha: 'px-4 py-2 text-sm',
+  destaque: 'px-6 py-3 text-sm',
+}
+
+export function BotaoWatchlist({
+  filme,
+  variante = 'linha',
+}: {
+  filme: ItemWatchlist
+  variante?: Variante
+}) {
   const [salvo, setSalvo] = useState(false)
 
   // Ler no efeito: no servidor não há localStorage, e divergir aqui quebra a hidratação.
@@ -41,10 +59,10 @@ export function BotaoWatchlist({ filme }: { filme: ItemWatchlist }) {
       type="button"
       onClick={alternar}
       aria-pressed={salvo}
-      className={`mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+      className={`inline-flex items-center gap-2 rounded-sm border font-semibold transition-colors ${TAMANHO[variante]} ${
         salvo
           ? 'border-acento bg-acento/15 text-acento'
-          : 'border-borda text-texto-fraco hover:border-acento/60 hover:text-texto'
+          : 'border-borda bg-superficie-alta/70 text-texto hover:border-texto-fraco hover:bg-superficie-alta'
       }`}
     >
       <IconeMarcador preenchido={salvo} />

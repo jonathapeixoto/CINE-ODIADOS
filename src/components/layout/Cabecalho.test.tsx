@@ -9,7 +9,7 @@ describe('Cabecalho', () => {
   it('mantém marca → nav → busca na ordem do DOM (e de tabulação)', () => {
     render(<Cabecalho />)
 
-    const marca = screen.getByRole('link', { name: /o que assistir hoje/i })
+    const marca = screen.getByRole('link', { name: /cineodiados/i })
     const minhaLista = screen.getByRole('link', { name: /minha lista/i })
     const busca = screen.getByRole('searchbox', { name: /buscar/i })
     const botaoBuscar = screen.getByRole('button', { name: /buscar/i })

@@ -35,7 +35,7 @@ function IconeClaquete() {
 export function EstadoVazio({ sugestao }: { sugestao: Sugestao | null }) {
   if (sugestao === null) {
     return (
-      <div className="mx-auto flex max-w-sm flex-col items-center gap-3 rounded-3xl border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
+      <div className="mx-auto flex max-w-sm flex-col items-center gap-3 rounded-md border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
         <IconeClaquete />
         <p className="text-sm text-texto sm:text-base">
           Nenhum filme atende a esses filtros. Tente remover algum deles.
@@ -45,15 +45,15 @@ export function EstadoVazio({ sugestao }: { sugestao: Sugestao | null }) {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-3xl border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
+    <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-md border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
       <IconeClaquete />
       <p className="max-w-sm text-sm text-texto sm:text-base">
         Nenhum filme atende a esses filtros. Sem {NOMES[sugestao.rotulo]}, aparecem{' '}
-        <span className="font-mono font-semibold text-acento">{sugestao.ganho} filmes</span>.
+        <span className="font-semibold tabular-nums text-texto">{sugestao.ganho} filmes</span>.
       </p>
       <Link
         href={`/?${escreverFiltros(sugestao.filtros).toString()}`}
-        className="mt-1 inline-flex items-center gap-2 rounded-full bg-acento px-6 py-2.5 text-sm font-semibold text-acento-texto transition-colors hover:bg-acento-forte"
+        className="mt-1 inline-flex items-center gap-2 rounded-sm bg-texto px-6 py-2.5 text-sm font-bold text-fundo transition-colors hover:bg-white"
       >
         Remover esse filtro
       </Link>

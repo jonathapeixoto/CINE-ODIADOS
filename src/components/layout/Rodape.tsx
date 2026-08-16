@@ -1,8 +1,9 @@
 export function Rodape() {
   return (
     <footer className="border-t border-borda bg-fundo">
-      <div className="mx-auto max-w-6xl px-4 py-8 text-xs leading-relaxed text-texto-fraco sm:px-6">
-        <p>Dados de disponibilidade em streaming fornecidos por JustWatch.</p>
+      <div className="envelope py-10 text-xs leading-relaxed text-texto-fraco">
+        <p className="marquise text-base text-texto-fraco/70">CineOdiados</p>
+        <p className="mt-4">Dados de disponibilidade em streaming fornecidos por JustWatch.</p>
         <p className="mt-1">
           Este produto usa a API do TMDB, mas não é endossado, certificado ou aprovado pelo TMDB.
         </p>

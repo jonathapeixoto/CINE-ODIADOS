@@ -1,38 +1,50 @@
+'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { CampoBusca } from './CampoBusca'
 
 export function Cabecalho() {
+  const [rolou, setRolou] = useState(false)
+
+  // No topo o cabeçalho é só um véu escuro: o destaque da home continua
+  // inteiro por baixo dele, sem uma barra cortando a arte. Assim que a página
+  // sai do lugar, ele fecha em fundo sólido para não disputar com a grade.
+  useEffect(() => {
+    const aoRolar = () => setRolou(window.scrollY > 24)
+    aoRolar()
+    window.addEventListener('scroll', aoRolar, { passive: true })
+    return () => window.removeEventListener('scroll', aoRolar)
+  }, [])
+
   return (
-    <header className="sticky top-0 z-10 border-b border-borda bg-superficie-alta/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 sm:flex-nowrap sm:px-6">
+    <header
+      className={`fixed inset-x-0 top-0 z-40 h-[var(--altura-cabecalho)] transition-colors duration-300 ${
+        rolou
+          ? 'border-b border-borda bg-fundo/95 backdrop-blur'
+          : 'bg-gradient-to-b from-fundo/95 via-fundo/50 to-transparent'
+      }`}
+    >
+      <div className="envelope flex h-full items-center gap-3 sm:gap-8">
+        {/* Sem utilitário `order-*`: a ordem do DOM é a ordem visual em toda
+            largura, e é também a ordem de tabulação — as três concordam sem
+            precisar de CSS pra desalinhar uma da outra. O cabeçalho é de uma
+            linha só em qualquer tela; quem cede espaço no mobile é a busca,
+            que encolhe, e não a marca. */}
         <Link
           href="/"
-          className="font-display text-xl italic tracking-tight text-texto transition-colors hover:text-acento"
+          className="marquise shrink-0 text-lg text-acento transition-colors [text-shadow:0_2px_16px_rgba(216,31,60,0.45)] hover:text-acento-forte sm:text-2xl"
         >
-          O que assistir hoje
+          CineOdiados
         </Link>
-        <nav>
+        <nav className="shrink-0 sm:flex-1">
           <Link
             href="/minha-lista"
-            className="text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
+            className="whitespace-nowrap text-[13px] font-medium text-texto-fraco transition-colors hover:text-texto sm:text-sm"
           >
             Minha lista
           </Link>
         </nav>
-        {/* Sem utilitário `order-*`: a ordem do DOM é a ordem visual em toda
-            largura, e é também a ordem de tabulação — as três concordam sem
-            precisar de CSS pra desalinhar uma da outra. No mobile, marca e
-            nav ficam juntas na linha 1 (a mesma dupla, com o mesmo
-            `justify-between`, que já funcionava sozinha antes desta tarefa);
-            a busca vem depois no DOM e, sendo `w-full`, não cabe nessa linha
-            e cai pra linha 2 — cabeçalho com 2 linhas no mobile, não 3. No
-            desktop ela cabe na mesma linha das outras duas; o
-            `justify-between` do container prende a marca na borda esquerda e
-            a busca (agora a última) na direita, com "Minha lista" flutuando
-            no meio. */}
-        <div className="w-full sm:w-auto">
-          <CampoBusca />
-        </div>
+        <CampoBusca />
       </div>
     </header>
   )

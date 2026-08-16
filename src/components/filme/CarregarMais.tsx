@@ -63,12 +63,12 @@ function PaginasExtras({ filtros, paginaAtual, totalPaginas }: Props) {
             type="button"
             onClick={carregar}
             disabled={carregando}
-            className="inline-flex items-center gap-2 rounded-full bg-acento px-6 py-2.5 text-sm font-semibold text-acento-texto transition-colors hover:bg-acento-forte disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-sm border border-borda bg-superficie px-8 py-2.5 text-sm font-semibold text-texto transition-colors hover:border-texto-fraco hover:bg-superficie-alta disabled:cursor-not-allowed disabled:opacity-60"
           >
             {carregando && (
               <span
                 aria-hidden="true"
-                className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-acento-texto/40 border-t-acento-texto"
+                className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-texto/30 border-t-texto"
               />
             )}
             {carregando ? 'Carregando…' : 'Carregar mais'}

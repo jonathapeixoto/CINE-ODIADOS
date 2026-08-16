@@ -61,7 +61,7 @@ describe('descobrirFilmes', () => {
       titulo: 'A Origem',
       sinopse: 'Um ladrão que invade sonhos.',
       poster: 'https://image.tmdb.org/t/p/w342/poster.jpg',
-      backdrop: 'https://image.tmdb.org/t/p/w780/backdrop.jpg',
+      backdrop: 'https://image.tmdb.org/t/p/w1280/backdrop.jpg',
       nota: 8.4,
       votos: 35000,
       ano: 2010,

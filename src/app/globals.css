@@ -1,37 +1,80 @@
 @import 'tailwindcss';
 
 /*
- * Paleta "sala escura": fundo quase preto para o pôster ser o protagonista,
- * com um acento âmbar (luz de marquise / canhoto de ingresso) em vez do
- * verde-ácido genérico. Tipografia: serifa editorial no wordmark do app
- * (usada com itálico só onde o app se nomeia), Inter no corpo, e uma
- * monoespaçada nos números (ano, nota) para lembrar um timecode de cinema.
+ * Paleta "sessão das dez": preto de sala escura para o pôster ser o único
+ * ponto de cor da tela. O carmim de poltrona é reservado a três coisas — a
+ * marca, a ação principal e o filtro ligado. Nada mais é vermelho; senão o
+ * vermelho para de significar alguma coisa.
+ *
+ * Tipografia: Archivo (variável, com eixo de largura) só na marca e no título
+ * do destaque, comprimida e em caixa alta, como letra de marquise; Instrument
+ * Sans em todo o resto. Não há mais família monoespaçada: o que ela resolvia
+ * era alinhar dígitos, e `tabular-nums` resolve isso sem uma terceira fonte.
  */
 @theme {
-  --color-fundo: #0c0e14;
-  --color-superficie: #161923;
-  --color-superficie-alta: #1f2330;
-  --color-borda: #2a2f3d;
-  --color-texto: #f1eee6;
-  --color-texto-fraco: #9298ab;
-  --color-acento: #e8a33d;
-  --color-acento-forte: #f4bd66;
-  --color-acento-texto: #241605;
+  /* A escala de cinza é neutra de propósito: qualquer traço de azul nela
+     disputaria com a arte dos pôsteres, que é onde toda a cor da tela deve
+     estar. Fora dos pôsteres só existe um matiz, o carmim. */
+  --color-fundo: #0a0a0a;
+  --color-superficie: #141414;
+  --color-superficie-alta: #1e1e1e;
+  --color-borda: #333333;
+  --color-texto: #f4f2ef;
+  --color-texto-fraco: #a3a3a3;
+  --color-acento: #d81f3c;
+  --color-acento-forte: #f13253;
+  --color-acento-texto: #ffffff;
 
-  --font-display: var(--nf-display), ui-serif, Georgia, 'Times New Roman', serif;
+  --font-display: var(--nf-display), 'Archivo', ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--nf-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: var(--nf-mono), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 
-/* Altura renderizada do Cabecalho (sticky top-0), medida no navegador.
-   A linha de filtros fica sticky logo abaixo dele e depende deste valor.
-   Se o cabeçalho mudar de altura, meça de novo e atualize aqui. */
+/* Altura do Cabecalho, que é `fixed`. O valor faz dois trabalhos: o respiro no
+   topo do <body> e a posição em que a linha de filtros gruda. O cabeçalho
+   agora declara a mesma altura em classe (h-[var(--altura-cabecalho)]), então
+   isto não é mais uma medição feita no navegador — é uma constante só, lida
+   dos dois lados. Uma linha em qualquer largura: nada de valor por breakpoint
+   porque nada quebra em duas linhas. */
 :root {
-  --altura-cabecalho: 103px;
+  --altura-cabecalho: 3.5rem;
 }
 @media (min-width: 640px) {
   :root {
-    --altura-cabecalho: 63px;
+    --altura-cabecalho: 4rem;
+  }
+}
+
+@layer components {
+  /* Letra de marquise. Só a marca e o título do destaque usam — são os dois
+     momentos de cartaz do app, e um gesto tipográfico forte só continua forte
+     enquanto for raro. Títulos de seção ficam em caixa baixa, largura normal. */
+  .marquise {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 84%;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 0.92;
+  }
+
+  /* Uma única medida de coluna para cabeçalho, destaque, grade e rodapé — é o
+     que faz a marca, o título do destaque e a primeira coluna de pôsteres
+     caírem todos na mesma vertical. */
+  .envelope {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 96rem;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .envelope {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .envelope {
+      padding-inline: 2.5rem;
+    }
   }
 }
 
@@ -39,7 +82,25 @@
 :focus-visible {
   outline-width: 2px;
   outline-style: solid;
-  outline-color: var(--color-acento);
+  outline-color: var(--color-acento-forte);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 3px;
+}
+
+/* A única entrada animada do app: o texto do destaque sobe uma vez, no
+   carregamento. Tudo o mais reage a hover ou a clique. */
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .subir {
+    animation: subir 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
 }

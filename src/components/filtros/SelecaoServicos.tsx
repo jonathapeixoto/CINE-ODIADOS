@@ -9,12 +9,12 @@ import { SERVICOS_NA_PRIMEIRA_VISITA, provedoresVisiveis } from './provedores-vi
 const alternar = (lista: number[], id: number): number[] =>
   lista.includes(id) ? lista.filter((i) => i !== id) : [...lista, id]
 
-// Cada "lampada" acende em âmbar quando marcada — o mesmo aceno de marquise
-// que dá nome ao acento da paleta (ver comentário em globals.css).
+// Cada logo acende em carmim quando marcado — o mesmo vermelho da marca e da
+// ação principal, aqui dizendo "este serviço está ligado" (ver globals.css).
 const classeLampada =
-  'group relative flex items-center justify-center rounded-2xl border border-borda bg-superficie-alta p-3 ' +
-  'transition-all hover:border-acento/60 has-[:checked]:border-acento has-[:checked]:bg-acento/10 ' +
-  'has-[:checked]:shadow-[0_0_20px_-4px_var(--color-acento)]'
+  'group relative flex items-center justify-center rounded-sm border border-borda bg-superficie-alta p-3 ' +
+  'transition-all hover:border-texto-fraco has-[:checked]:border-acento has-[:checked]:bg-acento/10 ' +
+  'has-[:checked]:shadow-[0_0_24px_-6px_var(--color-acento)]'
 
 export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
   const router = useRouter()
@@ -33,7 +33,7 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6">
-      <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
+      <h1 className="font-display text-3xl font-bold tracking-tight text-texto sm:text-4xl">
         Quais serviços você assina?
       </h1>
       <p className="mt-3 max-w-md text-sm text-texto-fraco sm:text-base">
@@ -58,7 +58,7 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
                     ele — o nome acessível da caixa de seleção é o mesmo dos dois
                     jeitos, com imagem ou sem. */}
                 {provedor.logo === null ? (
-                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-dashed border-borda px-1 text-center text-[11px] leading-tight text-texto-fraco">
+                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-sm border border-dashed border-borda px-1 text-center text-[11px] leading-tight text-texto-fraco">
                     {provedor.nome}
                   </span>
                 ) : (
@@ -67,7 +67,7 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
                     alt={provedor.nome}
                     width={56}
                     height={56}
-                    className="h-14 w-14 rounded-xl object-cover"
+                    className="h-14 w-14 rounded-sm object-cover"
                   />
                 )}
               </label>
@@ -83,7 +83,7 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
             type="button"
             aria-expanded={todos}
             onClick={() => setTodos((v) => !v)}
-            className="mx-auto mt-6 block text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
+            className="mx-auto mt-6 block text-sm font-medium text-texto-fraco transition-colors hover:text-texto"
           >
             {todos ? 'Ver menos serviços' : `Ver mais ${escondidos} serviços`}
           </button>
@@ -94,14 +94,14 @@ export function SelecaoServicos({ provedores }: { provedores: Provedor[] }) {
         <button
           type="button"
           onClick={() => confirmar(escolhidos)}
-          className="rounded-full bg-acento px-8 py-3 text-sm font-semibold text-acento-texto transition-colors hover:bg-acento-forte"
+          className="rounded-sm bg-acento px-8 py-3 text-sm font-bold text-acento-texto transition-colors hover:bg-acento-forte"
         >
           Ver filmes
         </button>
         <button
           type="button"
           onClick={() => confirmar([])}
-          className="text-sm font-medium text-texto-fraco transition-colors hover:text-acento"
+          className="text-sm font-medium text-texto-fraco transition-colors hover:text-texto"
         >
           Pular por enquanto
         </button>

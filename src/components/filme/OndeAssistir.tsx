@@ -47,7 +47,7 @@ function Grupo({ titulo, provedores }: { titulo: string; provedores: Provedor[] 
 
   return (
     <div>
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-texto-fraco">{titulo}</h3>
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-texto-fraco">{titulo}</h3>
       <ul className="mt-2.5 flex flex-wrap gap-2.5">
         {provedores.map((provedor) => (
           <li key={provedor.id}>
@@ -56,7 +56,7 @@ function Grupo({ titulo, provedores }: { titulo: string; provedores: Provedor[] 
               // gabarito, com a borda tracejada dos demais espaços reservados.
               <span
                 title={provedor.nome}
-                className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-dashed border-borda px-1 text-center text-[10px] leading-tight text-texto-fraco"
+                className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-sm border border-dashed border-borda px-1 text-center text-[10px] leading-tight text-texto-fraco"
               >
                 {provedor.nome}
               </span>
@@ -67,7 +67,7 @@ function Grupo({ titulo, provedores }: { titulo: string; provedores: Provedor[] 
                 title={provedor.nome}
                 width={48}
                 height={48}
-                className="rounded-xl ring-1 ring-borda"
+                className="rounded-sm ring-1 ring-borda"
               />
             )}
           </li>
@@ -87,9 +87,9 @@ export function OndeAssistir({ disponibilidade }: { disponibilidade: Disponibili
   return (
     <section
       aria-labelledby="onde-assistir"
-      className="rounded-3xl border border-borda bg-superficie p-6 sm:p-7"
+      className="rounded-md border border-borda bg-superficie p-6 sm:p-7"
     >
-      <h2 id="onde-assistir" className="font-display text-2xl italic tracking-tight text-texto">
+      <h2 id="onde-assistir" className="font-display text-2xl font-bold text-texto">
         Onde assistir
       </h2>
 
@@ -112,7 +112,7 @@ export function OndeAssistir({ disponibilidade }: { disponibilidade: Disponibili
               href={disponibilidade.linkJustWatch}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-acento px-6 py-2.5 text-sm font-semibold text-acento-texto transition-colors hover:bg-acento-forte"
+              className="inline-flex items-center gap-2 rounded-sm bg-acento px-6 py-2.5 text-sm font-bold text-acento-texto transition-colors hover:bg-acento-forte"
             >
               Assistir no JustWatch
               <IconeAbrirLink />

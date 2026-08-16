@@ -58,16 +58,12 @@ export function BotaoSurpreendaMe({ filtros }: { filtros: Filtros }) {
   }
 
   return (
-    <div className="relative inline-flex shrink-0">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-1 -z-10 rounded-full bg-acento/40 blur-lg motion-safe:animate-pulse"
-      />
+    <div className="relative flex shrink-0">
       <button
         ref={gatilhoRef}
         type="button"
         onClick={sortear}
-        className="inline-flex items-center gap-2.5 rounded-full bg-acento px-7 py-3.5 text-base font-bold text-acento-texto shadow-[0_10px_28px_-8px_rgba(232,163,61,0.65)] transition-transform hover:scale-[1.03] hover:bg-acento-forte active:scale-[0.98]"
+        className="inline-flex w-full items-center justify-center gap-2.5 rounded-sm bg-acento px-6 py-2.5 text-sm font-bold text-acento-texto shadow-[0_10px_26px_-14px_rgba(216,31,60,0.85)] transition-colors hover:bg-acento-forte sm:w-auto"
       >
         <IconeDado girando={carregando} />
         Surpreenda-me

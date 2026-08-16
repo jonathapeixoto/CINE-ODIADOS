@@ -54,21 +54,21 @@ export default function MinhaLista() {
   return (
     <main
       aria-busy={itens === null}
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6"
+      className="envelope flex-1 py-10"
     >
-      <h1 className="font-display text-3xl italic tracking-tight text-texto sm:text-4xl">
+      <h1 className="font-display text-3xl font-bold tracking-tight text-texto sm:text-4xl">
         Minha lista
       </h1>
 
       {itens !== null && itens.length === 0 && (
-        <div className="mx-auto mt-8 flex max-w-sm flex-col items-center gap-3 rounded-3xl border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
+        <div className="mx-auto mt-8 flex max-w-sm flex-col items-center gap-3 rounded-md border border-dashed border-borda bg-superficie px-6 py-16 text-center sm:py-20">
           <IconeMarcadorVazio />
           <p className="text-sm text-texto sm:text-base">Você ainda não salvou nenhum filme.</p>
         </div>
       )}
 
       {itens !== null && itens.length > 0 && (
-        <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <ul className="mt-8 grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-3 sm:gap-x-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
           {itens.map((item) => (
             <li key={item.id}>
               <Link href={`/filme/${item.id}`} className="group block">
@@ -78,19 +78,19 @@ export default function MinhaLista() {
                     alt=""
                     width={342}
                     height={513}
-                    sizes="(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 45vw"
-                    className="h-auto w-full rounded-lg object-cover ring-1 ring-borda transition group-hover:ring-2 group-hover:ring-acento"
+                    sizes="(min-width: 1536px) 14vw, (min-width: 1280px) 16vw, (min-width: 1024px) 19vw, (min-width: 640px) 25vw, 45vw"
+                    className="h-auto w-full rounded-sm object-cover ring-1 ring-borda transition duration-300 group-hover:ring-acento motion-safe:group-hover:-translate-y-1"
                   />
                 ) : (
                   <div
                     role="presentation"
-                    className="flex aspect-[2/3] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-borda bg-superficie text-texto-fraco transition group-hover:border-acento"
+                    className="flex aspect-[2/3] flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-borda bg-superficie text-texto-fraco transition group-hover:border-acento"
                   >
                     <IconeSemPoster />
                     <span className="text-xs">Sem pôster</span>
                   </div>
                 )}
-                <h3 className="mt-3 truncate font-display text-sm text-texto transition-colors group-hover:text-acento">
+                <h3 className="mt-2.5 truncate text-[13px] font-medium text-texto transition-colors group-hover:text-acento">
                   {item.titulo}
                 </h3>
               </Link>

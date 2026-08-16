@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { GradeFilmes } from '@/components/filme/GradeFilmes'
+import { GradeFilmes, QTD_PRIORITARIA } from '@/components/filme/GradeFilmes'
 import type { Filme } from '@/lib/tipos'
 
 const criarFilme = (id: number, titulo: string): Filme => ({
@@ -15,23 +15,24 @@ const criarFilme = (id: number, titulo: string): Filme => ({
 })
 
 describe('GradeFilmes', () => {
-  it('prioriza os primeiros 6 cartões quando priorizarPrimeiros=true', () => {
-    const filmes = Array.from({ length: 10 }, (_, i) => criarFilme(i + 1, `Filme ${i + 1}`))
+  // O número exato acompanha a maior contagem de colunas da grade, então o
+  // teste lê a constante em vez de repeti-la: o que ele garante é a regra —
+  // a primeira linha inteira entra prioritária, e nada além dela.
+  it('prioriza a primeira linha de cartões quando priorizarPrimeiros=true', () => {
+    const total = QTD_PRIORITARIA + 3
+    const filmes = Array.from({ length: total }, (_, i) => criarFilme(i + 1, `Filme ${i + 1}`))
     render(<GradeFilmes filmes={filmes} priorizarPrimeiros />)
 
-    // Verifica que os primeiros 6 têm data-priority=true
-    for (let i = 0; i < 6; i++) {
-      const img = screen.getByAltText(`Filme ${i + 1}`)
-      expect(img).toHaveAttribute('data-priority', 'true')
+    for (let i = 0; i < QTD_PRIORITARIA; i++) {
+      expect(screen.getByAltText(`Filme ${i + 1}`)).toHaveAttribute('data-priority', 'true')
     }
 
-    // Verifica que o 7º tem data-priority=false
-    const img7 = screen.getByAltText('Filme 7')
-    expect(img7).toHaveAttribute('data-priority', 'false')
-
-    // Verifica que outros também têm data-priority=false
-    const img10 = screen.getByAltText('Filme 10')
-    expect(img10).toHaveAttribute('data-priority', 'false')
+    // O primeiro cartão fora da linha, e o último de todos, ficam de fora.
+    expect(screen.getByAltText(`Filme ${QTD_PRIORITARIA + 1}`)).toHaveAttribute(
+      'data-priority',
+      'false',
+    )
+    expect(screen.getByAltText(`Filme ${total}`)).toHaveAttribute('data-priority', 'false')
   })
 
   it('não prioriza nenhum cartão por padrão (priorizarPrimeiros=false)', () => {

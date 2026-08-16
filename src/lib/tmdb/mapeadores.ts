@@ -16,7 +16,10 @@ export function mapearFilme(cru: FilmeCru): Filme {
     titulo: textoOuNulo(cru.title) ?? textoOuNulo(cru.original_title) ?? 'Sem título',
     sinopse: textoOuNulo(cru.overview),
     poster: urlImagem(cru.poster_path, 'w342'),
-    backdrop: urlImagem(cru.backdrop_path, 'w780'),
+    // w1280 e não w780: a arte de fundo agora ocupa a largura inteira da tela
+    // no destaque da home e no topo da página de detalhe, e o corte menor
+    // aparecia borrado num monitor grande.
+    backdrop: urlImagem(cru.backdrop_path, 'w1280'),
     nota: cru.vote_average ?? 0,
     votos: cru.vote_count ?? 0,
     ano: cru.release_date ? Number(cru.release_date.slice(0, 4)) : null,

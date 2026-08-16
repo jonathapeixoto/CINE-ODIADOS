@@ -12,12 +12,21 @@ test('escolher serviços, filtrar, sortear, abrir detalhe e salvar na lista', as
   // \b evita que a busca por "…Teste 1" também bata em "…Teste 10".."19".
   await expect(page.getByRole('link', { name: /Filme de Teste 1\b/ })).toBeVisible()
 
+  // Os filtros moram num painel fechado, que abre por cima da grade em vez de
+  // empurrá-la: a grade é o conteúdo da página, e um menu não pode jogá-la
+  // para fora da tela. Então o caminho até um gênero começa pelo botão.
+  await page.getByRole('button', { name: /filtros/i }).click()
+
   // Filtrar por gênero reescreve a URL. É um clique simples (não `.check()`):
   // o checkbox é controlado só pela prop `filtros` vinda do servidor, então o
   // estado "marcado" só chega depois da ida e volta do router.push — o mesmo
   // comportamento que BarraFiltros.test.tsx já documenta com o router mockado.
   await page.getByRole('checkbox', { name: 'Comédia' }).click()
   await expect(page).toHaveURL(/generos=35/)
+
+  // Um clique fora fecha o painel, como qualquer menu suspenso.
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('checkbox', { name: 'Comédia' })).toBeHidden()
 
   // Sorteio.
   await page.getByRole('button', { name: /surpreenda-me/i }).click()

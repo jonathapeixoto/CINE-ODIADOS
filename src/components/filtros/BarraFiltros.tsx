@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { escreverFiltros } from '@/lib/filtros'
 import { salvarServicos } from '@/lib/preferencias/servicos-cliente'
@@ -37,19 +37,45 @@ const valorDoPeriodo = (filtros: Filtros): string =>
 const alternar = (lista: number[], id: number): number[] =>
   lista.includes(id) ? lista.filter((i) => i !== id) : [...lista, id]
 
+const nomesDe = (lista: number[], catalogo: { id: number; nome: string }[]): string[] =>
+  lista.map((id) => catalogo.find((item) => item.id === id)?.nome).filter((n): n is string => !!n)
+
+/**
+ * O painel fica fechado, então a linha precisa dizer sozinha o que está
+ * ligado — senão o usuário teria que abrir o menu só para lembrar por que a
+ * grade está daquele jeito. A contagem no botão diz "quantos"; este resumo
+ * diz "quais".
+ */
+function resumir(filtros: Filtros, provedores: Provedor[], generos: Genero[]): string {
+  const periodo = valorDoPeriodo(filtros)
+  const partes = [
+    ...nomesDe(filtros.servicos, provedores),
+    ...nomesDe(filtros.generos, generos),
+    filtros.notaMinima !== null ? `nota ${filtros.notaMinima}+` : null,
+    filtros.duracaoMaxMin !== null ? `até ${filtros.duracaoMaxMin} min` : null,
+    // Um recorte de anos que não é nenhuma das décadas não tem rótulo pronto;
+    // escrever o intervalo é melhor do que omitir um filtro que está valendo.
+    periodo === PERIODO_LIVRE
+      ? `${filtros.anoDe ?? '…'} a ${filtros.anoAte ?? '…'}`
+      : (PERIODOS.find((p) => p.valor === periodo)?.rotulo ?? null),
+  ].filter((p): p is string => p !== null && p !== 'Qualquer')
+
+  return partes.length === 0 ? 'Tudo o que está no catálogo' : partes.join(' · ')
+}
+
 // Chip de seleção (serviço/gênero): o checkbox real fica visível — herda o
 // contorno de foco global e o realce ":checked" nativo sem precisar duplicar
 // nenhum dos dois à mão.
 const classeChip =
-  'inline-flex cursor-pointer items-center gap-2 rounded-full border border-borda bg-superficie-alta ' +
+  'inline-flex cursor-pointer items-center gap-2 rounded-sm border border-borda bg-superficie ' +
   'px-3 py-1.5 text-sm text-texto-fraco transition-colors has-[:checked]:border-acento ' +
-  'has-[:checked]:bg-acento/15 has-[:checked]:text-acento hover:border-acento/60 hover:text-texto'
+  'has-[:checked]:bg-acento/15 has-[:checked]:text-acento hover:border-texto-fraco hover:text-texto'
 
-const classeRotulo = 'text-xs font-semibold uppercase tracking-wider text-texto-fraco'
+const classeRotulo = 'text-[11px] font-semibold uppercase tracking-[0.16em] text-texto-fraco'
 
 const classeSelect =
-  'w-full rounded-lg border border-borda bg-superficie-alta px-3 py-2 text-sm text-texto ' +
-  'transition-colors hover:border-acento/60'
+  'w-full rounded-sm border border-borda bg-superficie px-3 py-2 text-sm text-texto ' +
+  'transition-colors hover:border-texto-fraco'
 
 function IconeSliders() {
   return (
@@ -100,6 +126,27 @@ export function BarraFiltros({
   const router = useRouter()
   const [aberto, setAberto] = useState(false)
   const [todosOsServicos, setTodosOsServicos] = useState(false)
+  const raizRef = useRef<HTMLElement>(null)
+
+  // O painel cobre a grade em vez de empurrá-la, então precisa fechar como
+  // qualquer menu suspenso: com Esc ou com um clique fora dele.
+  useEffect(() => {
+    if (!aberto) return
+
+    const aoTeclar = (evento: KeyboardEvent) => {
+      if (evento.key === 'Escape') setAberto(false)
+    }
+    const aoApontar = (evento: PointerEvent) => {
+      if (!raizRef.current?.contains(evento.target as Node)) setAberto(false)
+    }
+
+    document.addEventListener('keydown', aoTeclar)
+    document.addEventListener('pointerdown', aoApontar)
+    return () => {
+      document.removeEventListener('keydown', aoTeclar)
+      document.removeEventListener('pointerdown', aoApontar)
+    }
+  }, [aberto])
 
   const servicosNaTela = todosOsServicos
     ? provedores
@@ -131,36 +178,45 @@ export function BarraFiltros({
     (filtros.anoDe !== null || filtros.anoAte !== null ? 1 : 0)
 
   return (
-    <section
-      aria-label="Filtros"
-      className="rounded-2xl border border-borda bg-superficie/95 px-4 py-3 shadow-lg shadow-fundo/40 backdrop-blur sm:px-5 sm:py-4"
-    >
-      <button
-        type="button"
-        aria-expanded={aberto}
-        aria-controls="barra-filtros-painel"
-        onClick={() => setAberto((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 sm:hidden"
-      >
-        <span className="flex items-center gap-2 text-sm font-semibold text-texto">
+    <section aria-label="Filtros" ref={raizRef} className="relative">
+      <div className="flex min-w-0 items-center gap-3">
+        <button
+          type="button"
+          aria-expanded={aberto}
+          aria-controls="barra-filtros-painel"
+          onClick={() => setAberto((v) => !v)}
+          className={`inline-flex shrink-0 items-center gap-2 rounded-sm border px-3.5 py-2 text-sm font-semibold transition-colors ${
+            aberto
+              ? 'border-texto-fraco bg-superficie-alta text-texto'
+              : 'border-borda bg-superficie text-texto hover:border-texto-fraco'
+          }`}
+        >
           <IconeSliders />
           Filtros
           {totalAtivos > 0 && (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-acento px-1 font-mono text-[11px] font-bold text-acento-texto">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-sm bg-acento px-1 text-[11px] font-bold tabular-nums text-acento-texto">
               {totalAtivos}
             </span>
           )}
-        </span>
-        <IconeChevron aberto={aberto} />
-      </button>
+          <IconeChevron aberto={aberto} />
+        </button>
 
+        <p className="min-w-0 truncate text-[13px] text-texto-fraco">
+          {resumir(filtros, provedores, generos)}
+        </p>
+      </div>
+
+      {/* O painel é sobreposto, não empilhado: abrir um menu não pode empurrar
+          a grade que ele filtra para fora da tela. */}
       <div
         id="barra-filtros-painel"
-        className={`${aberto ? 'mt-4 flex' : 'hidden'} flex-col gap-5 sm:mt-0 sm:flex sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-6 sm:gap-y-4`}
+        className={`${
+          aberto ? 'flex' : 'hidden'
+        } absolute inset-x-0 top-full z-30 mt-2 max-h-[70vh] flex-col gap-6 overflow-y-auto rounded-md border border-borda bg-superficie-alta p-5 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.95)] sm:p-6`}
       >
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className={classeRotulo}>Serviços</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {servicosNaTela.map((provedor) => (
               <label key={provedor.id} className={classeChip}>
                 <input
@@ -177,7 +233,7 @@ export function BarraFiltros({
                 type="button"
                 aria-expanded={todosOsServicos}
                 onClick={() => setTodosOsServicos((v) => !v)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-borda px-3 py-1.5 text-sm text-texto-fraco transition-colors hover:border-acento/60 hover:text-texto"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-dashed border-borda px-3 py-1.5 text-sm text-texto-fraco transition-colors hover:border-texto-fraco hover:text-texto"
               >
                 {todosOsServicos ? 'Menos serviços' : `Mais ${escondidos} serviços`}
                 <IconeChevron aberto={todosOsServicos} className="h-3 w-3" />
@@ -188,7 +244,7 @@ export function BarraFiltros({
 
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className={classeRotulo}>Gêneros</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {generos.map((genero) => (
               <label key={genero.id} className={classeChip}>
                 <input
@@ -203,7 +259,7 @@ export function BarraFiltros({
           </div>
         </fieldset>
 
-        <div className="flex flex-wrap gap-4 sm:ml-auto">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <label className="flex flex-col gap-1.5">
             <span className={classeRotulo}>Nota mínima</span>
             <select

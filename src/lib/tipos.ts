@@ -20,7 +20,12 @@ export type FilmeDetalhado = Filme & {
   trailerYoutubeId: string | null
 }
 
-/** `logo: null` quando o TMDB não tem imagem do serviço; quem renderiza mostra o nome. */
+/**
+ * `logo: null` quando o TMDB não tem imagem do serviço; quem renderiza mostra o nome.
+ * `prioridade` é ordem de exibição com duas origens: índice no roster curado
+ * quando vem de `listarProvedores`, `display_priority` do TMDB quando vem da
+ * disponibilidade de um filme. Ambas alimentam `ordenarProvedores`.
+ */
 export type Provedor = { id: number; nome: string; logo: string | null; prioridade: number }
 
 export type Disponibilidade = {

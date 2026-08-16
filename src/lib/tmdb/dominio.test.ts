@@ -240,15 +240,16 @@ describe('obterDisponibilidade', () => {
 })
 
 describe('listas e busca', () => {
-  it('lista provedores do Brasil ordenados por prioridade', async () => {
+  it('devolve só os serviços curados, na ordem curada e com o rótulo curado', async () => {
     let url: URL | undefined
     servidor.use(
       http.get(`${BASE}/watch/providers/movie`, ({ request }) => {
         url = new URL(request.url)
         return HttpResponse.json({
           results: [
-            { provider_id: 119, provider_name: 'Amazon Prime Video', logo_path: '/a.jpg', display_priority: 2 },
-            { provider_id: 8, provider_name: 'Netflix', logo_path: '/n.jpg', display_priority: 1 },
+            { provider_id: 692, provider_name: 'Cultpix', logo_path: '/c.jpg', display_priority: 7 },
+            { provider_id: 119, provider_name: 'Amazon Prime Video', logo_path: '/a.jpg', display_priority: 1 },
+            { provider_id: 8, provider_name: 'Netflix', logo_path: '/n.jpg', display_priority: 0 },
           ],
         })
       }),
@@ -257,16 +258,36 @@ describe('listas e busca', () => {
     const provedores = await listarProvedores()
 
     expect(url?.searchParams.get('watch_region')).toBe('BR')
+    // Cultpix está fora do allowlist. E o rótulo curado vence o nome do TMDB:
+    // "Amazon Prime Video" vira "Prime Video".
     expect(provedores.map((p) => p.id)).toEqual([8, 119])
+    expect(provedores.map((p) => p.nome)).toEqual(['Netflix', 'Prime Video'])
     expect(provedores[0].logo).toBe('https://image.tmdb.org/t/p/w92/n.jpg')
   })
 
-  it('deixa o logo nulo quando o provedor não tem imagem', async () => {
+  it('omite o serviço curado que o TMDB não conhece mais', async () => {
     servidor.use(
       http.get(`${BASE}/watch/providers/movie`, () =>
         HttpResponse.json({
           results: [
-            { provider_id: 42, provider_name: 'Canal Sem Logo', logo_path: null, display_priority: 3 },
+            // 1825 é apelido do Max. Apelido sozinho não ressuscita o serviço:
+            // sem o principal, não há logo nem id para pôr na URL.
+            { provider_id: 1825, provider_name: 'HBO Max Amazon Channel', logo_path: '/h.jpg', display_priority: 11 },
+            { provider_id: 8, provider_name: 'Netflix', logo_path: '/n.jpg', display_priority: 0 },
+          ],
+        }),
+      ),
+    )
+
+    expect((await listarProvedores()).map((p) => p.id)).toEqual([8])
+  })
+
+  it('deixa o logo nulo quando o serviço não tem imagem', async () => {
+    servidor.use(
+      http.get(`${BASE}/watch/providers/movie`, () =>
+        HttpResponse.json({
+          results: [
+            { provider_id: 300, provider_name: 'Pluto TV', logo_path: null, display_priority: 19 },
           ],
         }),
       ),

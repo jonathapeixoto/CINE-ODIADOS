@@ -1,6 +1,7 @@
 import 'server-only'
 import { MAX_PAGINAS, REGIAO, REVALIDATE } from '@/lib/constantes'
 import { paraQueryTmdb } from '@/lib/filtros'
+import { SERVICOS_POPULARES } from '@/lib/servicos/populares'
 import type {
   Disponibilidade,
   FilmeDetalhado,
@@ -17,6 +18,7 @@ import {
   mapearGenero,
   mapearProvedor,
   ordenarProvedores,
+  urlImagem,
 } from './mapeadores'
 import type {
   FilmeDetalhadoCru,
@@ -96,13 +98,37 @@ export async function obterDisponibilidade(id: number): Promise<Disponibilidade>
   }
 }
 
+/**
+ * Só os serviços curados, na ordem curada — ver src/lib/servicos/populares.ts
+ * para por que a lista não vem do display_priority do TMDB.
+ *
+ * `obterDisponibilidade` continua mostrando os provedores reais do filme, sem
+ * passar por aqui: na página de detalhe a pergunta é "onde este filme está?",
+ * e omitir a loja de aluguel seria esconder a resposta.
+ */
 export async function listarProvedores(): Promise<Provedor[]> {
   const cru = await buscarTmdb<ListaProvedoresCrua>(
     '/watch/providers/movie',
     { watch_region: REGIAO },
     { revalidate: REVALIDATE.listas },
   )
-  return ordenarProvedores(cru.results.map(mapearProvedor))
+  const porId = new Map(cru.results.map((provedor) => [provedor.provider_id, provedor]))
+
+  return SERVICOS_POPULARES.flatMap((servico, indice) => {
+    const achado = porId.get(servico.principal)
+    // Serviço que saiu do catálogo do TMDB some da barra em silêncio — o site
+    // continua de pé com um serviço a menos, que é a falha benigna.
+    if (achado === undefined) return []
+
+    return [
+      {
+        id: servico.principal,
+        nome: servico.rotulo,
+        logo: urlImagem(achado.logo_path, 'w92'),
+        prioridade: indice,
+      },
+    ]
+  })
 }
 
 export async function listarGeneros(): Promise<Genero[]> {

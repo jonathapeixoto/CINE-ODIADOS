@@ -5,6 +5,13 @@ test('escolher serviços, filtrar, sortear, abrir detalhe e salvar na lista', as
 
   // Primeira visita: seleção de serviços.
   await expect(page.getByRole('heading', { name: /quais serviços você assina/i })).toBeVisible()
+
+  // Só os serviços curados aparecem. O TMDB falso também serve o Cultpix, que
+  // está fora do allowlist brasileiro, e ele não pode ter caixa em tela alguma.
+  await expect(page.getByRole('checkbox', { name: 'Cultpix' })).toHaveCount(0)
+  // "Amazon Prime Video" aparece pelo rótulo curado, não pelo nome do TMDB.
+  await expect(page.getByRole('checkbox', { name: 'Prime Video' })).toBeVisible()
+
   await page.getByRole('checkbox', { name: 'Netflix' }).check()
   await page.getByRole('button', { name: /ver filmes/i }).click()
 
@@ -16,6 +23,8 @@ test('escolher serviços, filtrar, sortear, abrir detalhe e salvar na lista', as
   // empurrá-la: a grade é o conteúdo da página, e um menu não pode jogá-la
   // para fora da tela. Então o caminho até um gênero começa pelo botão.
   await page.getByRole('button', { name: /filtros/i }).click()
+
+  await expect(page.getByRole('checkbox', { name: 'Cultpix' })).toHaveCount(0)
 
   // Filtrar por gênero reescreve a URL. É um clique simples (não `.check()`):
   // o checkbox é controlado só pela prop `filtros` vinda do servidor, então o

@@ -2,21 +2,35 @@ import { createServer } from 'node:http'
 
 const PORTA = Number(process.env.PORTA_MOCK ?? 4010)
 
-const filmes = Array.from({ length: 20 }, (_, i) => ({
-  id: 100 + i,
-  title: `Filme de Teste ${i + 1}`,
-  original_title: `Test Movie ${i + 1}`,
-  overview: `Sinopse do filme de teste número ${i + 1}.`,
-  poster_path: null,
-  backdrop_path: null,
-  vote_average: 7 + (i % 3) / 10,
-  vote_count: 500 + i,
-  release_date: `20${10 + (i % 10)}-05-01`,
-}))
+// Metade com sinal forte de português, metade sem: sem essa variação o
+// desempate de src/lib/tmdb/portugues.ts não teria o que ordenar.
+//
+// O `title` continua "Filme de Teste N" em todos, de propósito. O sorteio pega
+// um filme qualquer e o e2e depois procura /Filme de Teste/ na Minha Lista —
+// variar o título faria esse teste falhar de vez em quando, conforme o sorteio.
+// Quem varia é o idioma original e a sinopse.
+const filmes = Array.from({ length: 20 }, (_, i) => {
+  const emPortugues = i % 2 === 0
+  return {
+    id: 100 + i,
+    title: `Filme de Teste ${i + 1}`,
+    original_title: `Test Movie ${i + 1}`,
+    original_language: emPortugues ? 'pt' : 'en',
+    overview: emPortugues ? `Sinopse do filme de teste número ${i + 1}.` : '',
+    poster_path: null,
+    backdrop_path: null,
+    vote_average: 7 + (i % 3) / 10,
+    vote_count: 500 + i,
+    release_date: `20${10 + (i % 10)}-05-01`,
+  }
+})
 
+// Cultpix não está no allowlist curado: ele existe aqui justamente para o e2e
+// provar que o site não o mostra.
 const provedores = [
   { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.jpg', display_priority: 1 },
   { provider_id: 119, provider_name: 'Amazon Prime Video', logo_path: '/prime.jpg', display_priority: 2 },
+  { provider_id: 692, provider_name: 'Cultpix', logo_path: '/cultpix.jpg', display_priority: 3 },
 ]
 
 const generos = [

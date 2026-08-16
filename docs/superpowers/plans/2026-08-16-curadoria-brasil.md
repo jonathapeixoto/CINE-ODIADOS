@@ -229,7 +229,7 @@ export const idsParaFiltro = (principais: number[]): number[] =>
 - [ ] **Step 4: Rodar e confirmar que passa**
 
 Run: `npm run test -- src/lib/servicos/populares.test.ts`
-Expected: PASS, 9 testes
+Expected: PASS, 10 testes
 
 - [ ] **Step 5: Commit**
 
@@ -244,6 +244,7 @@ git commit -m "feat: curar a lista de serviços de streaming do Brasil"
 
 **Files:**
 - Modify: `src/lib/tmdb/index.ts:99-106` (a função `listarProvedores`) e a lista de imports em `src/lib/tmdb/index.ts:13-20`
+- Modify: `src/lib/tipos.ts:23` (comentário do tipo `Provedor`)
 - Test: `src/lib/tmdb/dominio.test.ts:242-276` (substituir dois testes, acrescentar um)
 
 **Interfaces:**

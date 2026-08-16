@@ -147,18 +147,28 @@ existe só para engordar o filtro de quem tem principal.
 `prioridade` fica com dois sentidos no código: índice curado na lista de
 filtros, `display_priority` do TMDB na disponibilidade do filme
 (`obterDisponibilidade`, que continua mostrando todos os provedores reais e não
-passa pelo allowlist). Ambos são "ordem de exibição", ambos alimentam
-`ordenarProvedores`, e por isso a sobrecarga é inofensiva — mas merece um
-comentário no tipo.
+passa pelo allowlist). A sobrecarga é inofensiva, mas não pelo motivo que este
+parágrafo dizia antes: `ordenarProvedores` só é chamado em
+`obterDisponibilidade`. Na lista curada o campo é inerte — ela já chega na ordem
+certa e ninguém a reordena, nem a `BarraFiltros` nem a `SelecaoServicos` lêem
+`prioridade`. Ele existe ali só para satisfazer o tipo `Provedor`, e o
+comentário no tipo precisa dizer isso, senão alguém ordena a barra por um campo
+que acha que carrega o `display_priority` do TMDB.
 
 **`src/components/filtros/provedores-visiveis.ts` é apagado**, com seus dois
 limites e sua função. Junto vão os botões "ver mais N serviços" da
 `BarraFiltros` e da `SelecaoServicos`: treze logos não precisam de gaveta, e a
 lógica de "serviço marcado nunca some" existia só para consertar a truncagem.
 
-`lerServicosDoCookie()` passa a descartar IDs fora do allowlist. Sem isso, quem
-já visitou o site pode ficar com um serviço marcado que não aparece em lugar
-nenhum da barra — um filtro ativo e invisível, impossível de desligar.
+IDs fora do allowlist passam a ser descartados na leitura dos filtros. Sem isso,
+quem já visitou o site pode ficar com um serviço marcado que não aparece em
+lugar nenhum da barra — um filtro ativo e invisível, impossível de desligar.
+
+> **Corrigido na implementação.** Este parágrafo mandava peneirar em
+> `lerServicosDoCookie()`. A peneira ficou em `lerFiltros()`, que é o único funil
+> por onde a URL **e** o cookie viram um `Filtros` — uma peneira só cobre as duas
+> fontes, enquanto a versão do cookie deixaria passar ID digitado na URL. A
+> decisão está registrada em "Desvio consciente em relação ao spec", no plano.
 
 ## 5. O portão de disponibilidade
 
@@ -258,9 +268,17 @@ transformaria um comentário verdadeiro em mentira.
 ## 8. Riscos assumidos
 
 **ID aposentado pelo TMDB.** Se um serviço mudar de ID, como já aconteceu com o
-Telecine avulso, ele some da barra em silêncio. O grau de falha é benigno: o
-site continua de pé com um serviço a menos, e ninguém fica com filtro quebrado.
-Aceito sem mitigação, pelos motivos em 2.2.
+Telecine avulso, ele some da barra em silêncio. O site continua de pé com um
+serviço a menos. Aceito sem mitigação, pelos motivos em 2.2.
+
+Uma ressalva que a primeira versão deste parágrafo não fazia, e devia: quem
+tiver **só** esse serviço marcado fica com um filtro sem caixa na barra para
+desligar, porque a peneira de `lerFiltros` compara contra o roster, não contra o
+que o TMDB de fato devolveu. Nesse caso a grade fica vazia e o `EstadoVazio`
+oferece "remover esse filtro" (`?servicos=todos`), que funciona — então a saída
+existe, mas dizer que "ninguém fica com filtro quebrado" era otimista demais.
+Com mais de um serviço marcado nada acontece: `with_watch_providers` é um OU, e
+um ID morto ao lado de um vivo não muda o resultado.
 
 **Proxy de português erra nos dois sentidos.** Filme dublado que manteve o
 título original pontua baixo; filme sem versão brasileira mas com sinopse
